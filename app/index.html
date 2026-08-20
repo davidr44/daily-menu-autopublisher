@@ -1,0 +1,1193 @@
+<!DOCTYPE html>
+<html lang="pt">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Ementa SR</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;600;700&family=DM+Sans:wght@300;400;500&display=swap"
+    rel="stylesheet">
+  <style>
+    :root {
+      --red: #CC1010;
+      --red-deep: #A00C0C;
+      --red-glow: rgba(204, 16, 16, 0.18);
+      --black: #0A0A0A;
+      --surface: #161616;
+      --panel: #1E1E1E;
+      --panel2: #262626;
+      --border: rgba(255, 255, 255, 0.07);
+      --ash: #888;
+      --light: #D0C8C0;
+      --white: #F5F5F5;
+      --success: #1E7A44;
+      --radius: 12px;
+      --radius-sm: 8px;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--black);
+      color: var(--light);
+      min-height: 100vh;
+      padding-bottom: 48px;
+
+      /* AS NOVAS LINHAS ANTI-SELEÇÃO: */
+      -webkit-user-select: none;
+      /* Safari e iPhone */
+      -moz-user-select: none;
+      /* Firefox */
+      -ms-user-select: none;
+      /* Internet Explorer/Edge */
+      user-select: none;
+      /* O standard para os restantes (Android/Chrome) */
+      -webkit-touch-callout: none;
+      /* Desativa o menu de "Copiar/Colar" no iPhone se ficares a carregar! */
+    }
+
+    .header {
+      background: var(--red);
+      border-bottom: 3px solid var(--red-deep);
+    }
+
+    .header-inner {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 14px 16px 16px;
+    }
+
+    .header-logo {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid rgba(255, 255, 255, 0.25);
+      flex-shrink: 0;
+    }
+
+    .header-text h1 {
+      font-family: 'Oswald', sans-serif;
+      font-size: 22px;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .header-text .sub {
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.7);
+      margin-top: 2px;
+    }
+
+    .header-date {
+      background: var(--red-deep);
+      padding: 6px 16px;
+      font-size: 11px;
+      color: rgba(255, 255, 255, 0.75);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    /* MARGEM AUMENTADA: Passou de 16px para 30px nas laterais para criar a zona segura de scroll */
+    .content {
+      padding: 20px 30px;
+      max-width: 480px;
+      margin: 0 auto;
+    }
+
+    .section {
+      margin-bottom: 22px;
+    }
+
+    .section-label {
+      font-family: 'Oswald', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--red);
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .section-label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: rgba(204, 16, 16, 0.22);
+    }
+
+    .local-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .local-btn {
+      background: var(--panel);
+      border: 2px solid transparent;
+      border-radius: var(--radius);
+      padding: 14px 10px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.16s;
+      color: var(--ash);
+    }
+
+    .local-btn .lname {
+      font-family: 'Oswald', sans-serif;
+      font-size: 18px;
+      font-weight: 600;
+      display: block;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .local-btn.active {
+      background: var(--red-glow);
+      border-color: var(--red);
+      color: var(--white);
+    }
+
+    .search-wrap {
+      position: relative;
+      margin-bottom: 8px;
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 11px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 14px;
+      pointer-events: none;
+      opacity: 0.35;
+    }
+
+    .search-input {
+      width: 100%;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 11px 12px 11px 34px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      color: var(--white);
+      outline: none;
+    }
+
+    .search-input::placeholder {
+      color: var(--ash);
+    }
+
+    .search-input:focus {
+      border-color: rgba(204, 16, 16, 0.55);
+    }
+
+    /* SCROLL INTERNO RESTAURADO */
+    .dishes-list {
+      background: var(--panel);
+      border-radius: var(--radius);
+      overflow: hidden;
+      border: 1px solid var(--border);
+      max-height: 340px;
+      overflow-y: auto;
+      scrollbar-width: thin;
+    }
+
+    .dish-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 13px 16px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      cursor: pointer;
+      transition: background 0.12s;
+      user-select: none;
+    }
+
+    .dish-item:last-child {
+      border-bottom: none;
+    }
+
+    .dish-item.selected {
+      background: rgba(204, 16, 16, 0.1);
+    }
+
+    .dish-check {
+      width: 20px;
+      height: 20px;
+      border-radius: 6px;
+      border: 2px solid rgba(255, 255, 255, 0.12);
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      transition: all 0.13s;
+    }
+
+    .dish-item.selected .dish-check {
+      background: var(--red);
+      border-color: var(--red);
+      color: #fff;
+    }
+
+    .dish-name {
+      font-size: 14px;
+      color: var(--light);
+      flex: 1;
+    }
+
+    .dish-item.selected .dish-name {
+      color: var(--white);
+      font-weight: 500;
+    }
+
+    .dish-badge {
+      font-size: 10px;
+      background: rgba(204, 16, 16, 0.2);
+      color: rgba(255, 100, 100, 0.9);
+      padding: 2px 7px;
+      border-radius: 10px;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .add-row {
+      display: flex;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .add-input {
+      flex: 1;
+      background: var(--panel);
+      border: 1px dashed rgba(204, 16, 16, 0.35);
+      border-radius: var(--radius-sm);
+      padding: 10px 12px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 13px;
+      color: var(--white);
+      outline: none;
+    }
+
+    .add-input::placeholder {
+      color: rgba(204, 16, 16, 0.45);
+    }
+
+    .add-input:focus {
+      border-color: var(--red);
+    }
+
+    .add-btn {
+      background: rgba(204, 16, 16, 0.18);
+      border: 1px solid var(--red);
+      border-radius: var(--radius-sm);
+      color: rgba(255, 100, 100, 0.9);
+      padding: 10px 16px;
+      font-size: 20px;
+      cursor: pointer;
+      line-height: 1;
+    }
+
+    .count-badge {
+      display: none;
+      background: var(--red);
+      color: #fff;
+      font-size: 11px;
+      font-weight: 700;
+      border-radius: 10px;
+      padding: 1px 7px;
+      margin-left: 5px;
+      vertical-align: middle;
+    }
+
+    .summary-box {
+      background: rgba(204, 16, 16, 0.07);
+      border: 1px solid rgba(204, 16, 16, 0.2);
+      border-radius: var(--radius);
+      padding: 14px 16px;
+      margin-bottom: 20px;
+      display: none;
+    }
+
+    .summary-box.visible {
+      display: block;
+    }
+
+    .summary-ttl {
+      font-family: 'Oswald', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--red);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+
+    .summary-local {
+      font-family: 'Oswald', sans-serif;
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--white);
+      margin-bottom: 6px;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .summary-line {
+      font-size: 13px;
+      color: var(--ash);
+      line-height: 1.65;
+    }
+
+    .summary-line strong {
+      color: var(--light);
+      font-weight: 500;
+    }
+
+    .submit-btn {
+      width: 100%;
+      background: var(--red);
+      border: none;
+      border-radius: var(--radius);
+      color: #fff;
+      font-family: 'Oswald', sans-serif;
+      font-size: 18px;
+      font-weight: 600;
+      padding: 18px;
+      cursor: pointer;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      transition: all 0.16s;
+    }
+
+    .submit-btn:disabled {
+      background: var(--panel2);
+      color: var(--ash);
+      cursor: not-allowed;
+    }
+
+    .submit-sub {
+      display: block;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 11px;
+      font-weight: 400;
+      opacity: 0.75;
+      margin-top: 3px;
+      text-transform: none;
+      letter-spacing: 0;
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background: var(--success);
+      color: #fff;
+      padding: 12px 22px;
+      border-radius: 30px;
+      font-size: 14px;
+      font-weight: 500;
+      white-space: nowrap;
+      z-index: 999;
+      transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      pointer-events: none;
+    }
+
+    .toast.show {
+      transform: translateX(-50%) translateY(0);
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 18px;
+      color: var(--ash);
+      font-size: 13px;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: scale(0.96);
+      }
+
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    @keyframes shake {
+
+      0%,
+      100% {
+        transform: translateX(0);
+      }
+
+      20% {
+        transform: translateX(-8px);
+      }
+
+      40% {
+        transform: translateX(8px);
+      }
+
+      60% {
+        transform: translateX(-6px);
+      }
+
+      80% {
+        transform: translateX(6px);
+      }
+    }
+
+    /* ── PIN SCREEN ── */
+    .pin-screen {
+      position: fixed;
+      inset: 0;
+      background: var(--black);
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 24px;
+      padding: 32px;
+    }
+
+    .pin-screen.hidden {
+      display: none;
+    }
+
+    .pin-logo {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid var(--red);
+    }
+
+    .pin-title {
+      font-family: 'Oswald', sans-serif;
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--white);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      text-align: center;
+    }
+
+    .pin-sub {
+      font-size: 13px;
+      color: var(--ash);
+      text-align: center;
+      margin-top: -16px;
+    }
+
+    .pin-dots {
+      display: flex;
+      gap: 14px;
+    }
+
+    .pin-dot {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      border: 2px solid rgba(255, 255, 255, 0.2);
+      transition: all 0.15s;
+    }
+
+    .pin-dot.filled {
+      background: var(--red);
+      border-color: var(--red);
+    }
+
+    .pin-pad {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      width: 100%;
+      max-width: 270px;
+    }
+
+    .pin-btn {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px;
+      font-family: 'Oswald', sans-serif;
+      font-size: 22px;
+      font-weight: 600;
+      color: var(--white);
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.1s;
+      user-select: none;
+      min-height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      touch-action: manipulation;
+      /* ISTO É NOVO: Diz à Apple para NÃO fazer zoom no duplo clique rápido! */
+    }
+
+    .pin-btn:active {
+      background: rgba(204, 16, 16, 0.15);
+      border-color: var(--red);
+      transform: scale(0.95);
+    }
+
+    .pin-btn.del {
+      font-size: 18px;
+      color: var(--ash);
+    }
+
+    .pin-btn.empty {
+      background: transparent;
+      border: none;
+      cursor: default;
+    }
+
+    .pin-btn.empty:active {
+      transform: none;
+    }
+
+    .pin-error {
+      font-size: 13px;
+      color: var(--red);
+      text-align: center;
+      min-height: 18px;
+      font-weight: 500;
+    }
+
+    /* ── POP-UP DE CONFIRMAÇÃO PREMIUM ── */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(4px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 2000;
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.2s ease;
+    }
+
+    .modal-overlay.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .modal-box {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+      width: 90%;
+      max-width: 320px;
+      text-align: center;
+      transform: translateY(20px);
+      transition: all 0.25s ease;
+    }
+
+    .modal-overlay.show .modal-box {
+      transform: translateY(0);
+    }
+
+    .modal-text {
+      font-size: 16px;
+      color: var(--ash);
+      margin-bottom: 24px;
+      line-height: 1.6;
+    }
+
+    .modal-text strong {
+      color: var(--white);
+      font-weight: 700;
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 12px;
+    }
+
+    .btn-cancel {
+      flex: 1;
+      padding: 14px;
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      color: var(--light);
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 500;
+      font-size: 15px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .btn-cancel:active {
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .btn-confirm {
+      flex: 1;
+      padding: 14px;
+      background: var(--success);
+      border: none;
+      border-radius: var(--radius-sm);
+      color: #fff;
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 600;
+      font-size: 15px;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(30, 122, 68, 0.3);
+    }
+
+    .btn-confirm:active {
+      transform: scale(0.96);
+    }
+
+    /* Garantir que as caixas de pesquisa e de adicionar pratos deixam escrever e selecionar texto! */
+    input {
+      -webkit-user-select: auto;
+      -moz-user-select: auto;
+      -ms-user-select: auto;
+      user-select: auto;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div id="pinScreen" class="pin-screen">
+    <img class="pin-logo"
+      src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTEUtsd4hVkx2VT8FNzBJzjV7fMZl8O7glf6A&s" alt="SR">
+    <div class="pin-title">Ementa do Dia</div>
+    <div class="pin-sub">Insere o PIN para continuar</div>
+    <div class="pin-dots" id="pinDots">
+      <div class="pin-dot" id="pd0"></div>
+      <div class="pin-dot" id="pd1"></div>
+      <div class="pin-dot" id="pd2"></div>
+      <div class="pin-dot" id="pd3"></div>
+    </div>
+    <div class="pin-error" id="pinErro"></div>
+    <div class="pin-pad">
+      <div class="pin-btn" onpointerdown="pinPress('1')">1</div>
+      <div class="pin-btn" onpointerdown="pinPress('2')">2</div>
+      <div class="pin-btn" onpointerdown="pinPress('3')">3</div>
+      <div class="pin-btn" onpointerdown="pinPress('4')">4</div>
+      <div class="pin-btn" onpointerdown="pinPress('5')">5</div>
+      <div class="pin-btn" onpointerdown="pinPress('6')">6</div>
+      <div class="pin-btn" onpointerdown="pinPress('7')">7</div>
+      <div class="pin-btn" onpointerdown="pinPress('8')">8</div>
+      <div class="pin-btn" onpointerdown="pinPress('9')">9</div>
+      <div class="pin-btn empty"></div>
+      <div class="pin-btn" onpointerdown="pinPress('0')">0</div>
+      <div class="pin-btn del" onpointerdown="pinDel()">&#9003;</div>
+    </div>
+  </div>
+
+  <div class="header">
+    <div class="header-inner">
+      <img class="header-logo"
+        src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTEUtsd4hVkx2VT8FNzBJzjV7fMZl8O7glf6A&s" alt="SR">
+      <div class="header-text">
+        <h1>Churrasqueira SR</h1>
+        <div class="sub">Ementa do Dia</div>
+      </div>
+    </div>
+    <div class="header-date" id="dateBadge"></div>
+  </div>
+
+  <div class="content">
+
+    <div class="section">
+      <div class="section-label">📍 Local</div>
+      <div class="local-grid">
+        <div class="local-btn" id="btnI" onpointerdown="selectLocal('Infantado')">
+          <span class="lname">Infantado</span>
+        </div>
+        <div class="local-btn" id="btnO" onpointerdown="selectLocal('Odivelas')">
+          <span class="lname">Odivelas</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-label">🍲 Sopas <span class="count-badge" id="sopaBadge">0</span></div>
+      <div class="search-wrap">
+        <span class="search-icon">🔍</span>
+        <input class="search-input" id="sopaSearch" placeholder="Pesquisar sopa..." oninput="filterSopas(this.value)"
+          autocomplete="off">
+      </div>
+      <div class="dishes-list" id="sopasList"></div>
+      <div class="add-row">
+        <input class="add-input" id="sopaNewInput" placeholder="+ Sopa nova..." autocomplete="off">
+        <button class="add-btn" onclick="addNewSopa()">+</button>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-label">🍽️ Pratos <span class="count-badge" id="pratosCount">0</span></div>
+      <div class="search-wrap">
+        <span class="search-icon">🔍</span>
+        <input class="search-input" id="pratosSearch" placeholder="Pesquisar prato..."
+          oninput="filterPratos(this.value)" autocomplete="off">
+      </div>
+      <div class="dishes-list" id="pratosList"></div>
+      <div class="add-row">
+        <input class="add-input" id="pratoNewInput" placeholder="+ Prato novo..." autocomplete="off">
+        <button class="add-btn" onclick="addNewPrato()">+</button>
+      </div>
+    </div>
+
+    <div class="summary-box" id="summaryBox">
+      <div class="summary-ttl">Resumo da Ementa</div>
+      <div id="summaryContent"></div>
+    </div>
+
+    <button class="submit-btn" id="submitBtn" onclick="submitEmenta()" disabled>
+      Publicar Ementa
+      <span class="submit-sub" id="submitSub">Seleciona local + sopa + pelo menos 1 prato</span>
+    </button>
+
+  </div>
+  <div class="toast" id="toast"></div>
+
+  <div class="modal-overlay" id="confirmModal">
+    <div class="modal-box">
+      <div class="modal-text">
+        Vai publicar a ementa de <strong id="modalLocalText">Local</strong> nas redes sociais.
+      </div>
+      <div class="modal-actions">
+        <button class="btn-cancel" onclick="closeModal()">Cancelar</button>
+        <button class="btn-confirm" onclick="realSubmitEmenta()">Publicar</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // O TEU WEBHOOK
+    const WEBHOOK = '<removed from history: Make webhook URL>';
+
+    const SOPAS = [
+      "Canja", "Juliana", "Creme de legumes", "Alho francês", "Portuguesa",
+      "Espinafres", "Feijão verde", "Agrião", "Nabiça", "Caldo verde",
+      "Creme de cenoura", "Couve galega c/feijão branco", "Espinafres com feijão branco",
+      "Espinafres com grão", "Feijão", "Nabiça com feijão branco", "Nabiça com grão",
+      "Lombardo com feijão", "Alho francês com grão", "Lavrador", "Primavera", "Peixe",
+      "Couve à portuguesa com feijão catarino"
+    ];
+
+    const TOP_SOPAS = SOPAS.slice(0, 5);
+
+    const TOP_PRATOS = [
+      "Frango à Brás", "Bacalhau com natas", "Empadão", "Bacalhau espiritual",
+      "Arroz de pato", "Bacalhau c/natas e espinafres", "Bacalhau à lagareiro",
+      "Dourada grelhada", "Robalo grelhado", "Salmão grelhado"
+    ];
+
+    const PRATOS = [
+      ...TOP_PRATOS,
+      "Delícia de bacalhau com gambas", "Lasanha de carne", "Lasanha de frango",
+      "Choco à lagareiro", "Polvo à lagareiro", "Cozido à portuguesa",
+      "Ervilhas com ovos escalfados", "Jardineira de vitela", "Vitela no tacho com puré",
+      "Bacalhau à Brás", "Bacalhau à Zé do Pipo", "Bacalhau com broa à SR",
+      "Bacalhau à minhota", "Bacalhau fresco no forno", "Bacalhau com broa à posta",
+      "Lulas à lagareiro", "Lulas recheadas com puré", "Lulas estufadas",
+      "Feijoada à transmontana", "Feijoada de choco", "Feijoada de lulas",
+      "Mão de vaca com grão", "Dobrada", "Dobrada com feijão branco",
+      "Lombo no forno", "Lombo no tacho com puré", "Lombo de porco no forno",
+      "Arroz de frango no forno", "Massinha de peixe", "Red fish no forno",
+      "Peixe espada grelhada", "Solha frita c/arroz de feijão",
+      "Pescadinha frita c/arroz de feijão", "Sardinhas fritas",
+      "Empadão de carne", "Empadão de frango",
+      "Bochechas estufadas com puré", "Bochechas no forno", "Bochechas no tacho",
+      "Vitela no tacho com batata assada", "Maminha assada no forno", "Maminha estufada", "Maminha no tacho",
+      "Cabrito assado no forno", "Borrego no forno", "Borrego no tacho",
+      "Carne de porco à portuguesa", "Carne à alentejana",
+      "Coelho à caçador", "Coelho estufado", "Coelho no tacho",
+      "Alheira de vitela Mirandesa", "Alheira Mirandesa",
+      "Bifinhos de frango", "Bifinhos de peru com cogumelos", "Bifinhos à cebolada",
+      "Almôndegas com esparguete", "Almôndegas com puré", "Esparguete à bolonhesa",
+      "Jardineira de frango", "Jardineira de borrego",
+      "Hambúrguer de picanha SR", "Hambúrguer de vitela Mirandesa",
+      "Iscas de vitela Mirandesa", "Iscas à portuguesa", "Iscas de porco",
+      "Entrecosto frito com migas", "Entrecosto no forno", "Favas com entrecosto",
+      "Rancho à transmontana", "Rancho a minhota", "Rancho à portuguesa",
+      "Pernil no forno", "Medalhões de lombo de porco grelhado",
+      "Açorda de bacalhau", "Açorda de gambas", "Açorda de marisco",
+      "Moelas estufadas", "Frango estufado com batata", "Frango de caril", "Frango do campo no tacho",
+      "Pataniscas vegetarianas c/arroz de legumes",
+      "Leitão à Bairrada", "Lombo de leitão",
+      "Osso buco no tacho com puré", "Rolo de carne recheado", "Salsicha enrolada em lombardo",
+      "Strogonoff de peru", "Peito de peru no forno",
+      "Bacalhau lascado", "Escalope de vitela Mirandesa", "Polvo no forno", "Arroz de polvo"
+    ];
+
+    let state = { local: null, sopas: new Set(), pratos: new Set() };
+
+    // Função mágica que limpa os acentos todos para a pesquisa
+    function limpaAcentos(texto) {
+      return texto.normalize('NFD').replace(/[\u0300-\u036f]/g, "").toLowerCase();
+    }
+
+    function loadExtra() {
+      try { return JSON.parse(localStorage.getItem('sr_extras') || '{"sopas":[],"pratos":[]}'); }
+      catch (e) { return { sopas: [], pratos: [] }; }
+    }
+    function saveExtra(type, item) {
+      const ex = loadExtra();
+      if (!ex[type].includes(item)) ex[type].push(item);
+      try { localStorage.setItem('sr_extras', JSON.stringify(ex)); } catch (e) { }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      checkPin();
+      const d = new Date();
+      document.getElementById('dateBadge').textContent =
+        d.toLocaleDateString('pt-PT', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+      renderSopas('');
+      renderPratos('');
+    });
+
+    function selectLocal(l) {
+      state.local = l;
+      document.getElementById('btnI').classList.toggle('active', l === 'Infantado');
+      document.getElementById('btnO').classList.toggle('active', l === 'Odivelas');
+      updateSummary(); updateSubmit();
+    }
+
+    function getAllSopas() {
+      const ex = loadExtra();
+      return [...SOPAS, ...ex.sopas.filter(s => !SOPAS.includes(s))];
+    }
+    function renderSopas(filter) {
+      const c = document.getElementById('sopasList');
+      const ex = loadExtra();
+      const all = getAllSopas();
+
+      let list = all;
+      if (filter) {
+        const f = limpaAcentos(filter); // Limpa a pesquisa
+        list = all.filter(s => limpaAcentos(s).includes(f)).sort((a, b) => {
+          const aStart = limpaAcentos(a).startsWith(f);
+          const bStart = limpaAcentos(b).startsWith(f);
+          if (aStart && !bStart) return -1;
+          if (!aStart && bStart) return 1;
+          return 0;
+        });
+      }
+
+      if (!list.length) { c.innerHTML = '<div class="empty-state">Sem resultados</div>'; return; }
+      c.innerHTML = list.map(s => {
+        const sel = state.sopas.has(s);
+        const isNew = ex.sopas.includes(s);
+        const isTopSopa = TOP_SOPAS.includes(s) && !filter;
+        return `<div class="dish-item${sel ? ' selected' : ''}" onclick="toggleSopa('${s.replace(/'/g, "\'")}')">
+      <div class="dish-check">${sel ? '✓' : ''}</div>
+      <div class="dish-name">${s}</div>
+      ${isTopSopa ? '<span class="dish-badge">⭐</span>' : ''}
+      ${isNew ? '<span class="dish-badge">Nova</span>' : ''}
+    </div>`;
+      }).join('');
+    }
+    function filterSopas(v) { renderSopas(v); }
+    function toggleSopa(s) {
+      if (state.sopas.has(s)) { state.sopas.delete(s); }
+      else if (state.sopas.size >= 2) { showToast('Máximo 2 sopas'); return; }
+      else { state.sopas.add(s); }
+      const b = document.getElementById('sopaBadge');
+      b.textContent = state.sopas.size;
+      b.style.display = state.sopas.size > 0 ? 'inline-block' : 'none';
+      renderSopas(document.getElementById('sopaSearch').value);
+      updateSummary(); updateSubmit();
+    }
+    function addNewSopa() {
+      const inp = document.getElementById('sopaNewInput');
+      const v = inp.value.trim(); if (!v) return;
+      const f = v[0].toUpperCase() + v.slice(1);
+      saveExtra('sopas', f); inp.value = '';
+      renderSopas(''); toggleSopa(f);
+      showToast('"' + f + '" guardada!');
+    }
+
+    function getAllPratos() {
+      const ex = loadExtra();
+      const rest = PRATOS.filter(p => !TOP_PRATOS.includes(p));
+      return [...TOP_PRATOS, ...rest, ...ex.pratos.filter(p => !PRATOS.includes(p))];
+    }
+    function renderPratos(filter) {
+      const c = document.getElementById('pratosList');
+      const ex = loadExtra();
+      const all = getAllPratos();
+
+      let list = all;
+      if (filter) {
+        const f = limpaAcentos(filter); // Limpa a pesquisa
+        list = all.filter(p => limpaAcentos(p).includes(f)).sort((a, b) => {
+          const aStart = limpaAcentos(a).startsWith(f);
+          const bStart = limpaAcentos(b).startsWith(f);
+          if (aStart && !bStart) return -1;
+          if (!aStart && bStart) return 1;
+          return 0;
+        });
+      }
+
+      if (!list.length) { c.innerHTML = '<div class="empty-state">Sem resultados</div>'; return; }
+      c.innerHTML = list.map(p => {
+        const sel = state.pratos.has(p);
+        const isTop = TOP_PRATOS.includes(p) && !filter;
+        const isNew = ex.pratos.includes(p);
+        return `<div class="dish-item${sel ? ' selected' : ''}" onclick="togglePrato('${p.replace(/'/g, "\'")}')">
+      <div class="dish-check">${sel ? '✓' : ''}</div>
+      <div class="dish-name">${p}</div>
+      ${isTop ? '<span class="dish-badge">⭐</span>' : ''}
+      ${isNew ? '<span class="dish-badge">Novo</span>' : ''}
+    </div>`;
+      }).join('');
+    }
+    function filterPratos(v) { renderPratos(v); }
+    function togglePrato(p) {
+      state.pratos.has(p) ? state.pratos.delete(p) : state.pratos.add(p);
+      const b = document.getElementById('pratosCount');
+      b.textContent = state.pratos.size;
+      b.style.display = state.pratos.size > 0 ? 'inline-block' : 'none';
+      renderPratos(document.getElementById('pratosSearch').value);
+      updateSummary(); updateSubmit();
+    }
+    function addNewPrato() {
+      const inp = document.getElementById('pratoNewInput');
+      const v = inp.value.trim(); if (!v) return;
+      const f = v[0].toUpperCase() + v.slice(1);
+      saveExtra('pratos', f); inp.value = '';
+      document.getElementById('pratosSearch').value = '';
+      renderPratos(''); togglePrato(f);
+      showToast('"' + f + '" guardado!');
+    }
+
+    function updateSummary() {
+      const box = document.getElementById('summaryBox');
+      const con = document.getElementById('summaryContent');
+      if (!state.local && state.sopas.size === 0 && state.pratos.size === 0) { box.classList.remove('visible'); return; }
+      box.classList.add('visible');
+      let h = '';
+      if (state.local) h += '<div class="summary-local">📍 ' + state.local + '</div>';
+      if (state.sopas.size > 0) {
+        h += '<div class="summary-line">🍲 <strong>Sopas:</strong><br>';
+        h += [...state.sopas].map(s => '&nbsp;&nbsp;· ' + s).join('<br>') + '</div>';
+      }
+      if (state.pratos.size > 0) {
+        h += '<div class="summary-line" style="margin-top:6px">🍽️ <strong>Pratos (' + state.pratos.size + '):</strong><br>';
+        h += [...state.pratos].map(p => '&nbsp;&nbsp;· ' + p).join('<br>') + '</div>';
+      }
+      con.innerHTML = h;
+    }
+
+    function updateSubmit() {
+      const btn = document.getElementById('submitBtn');
+      const sub = document.getElementById('submitSub');
+      const ok = state.local && state.sopas.size > 0 && state.pratos.size > 0;
+      btn.disabled = !ok;
+
+      if (!state.local) {
+        sub.textContent = 'Seleciona o local primeiro';
+      } else if (state.sopas.size === 0) {
+        sub.textContent = 'Seleciona pelo menos 1 sopa';
+      } else if (state.pratos.size === 0) {
+        sub.textContent = 'Seleciona pelo menos 1 prato';
+      } else {
+        sub.textContent = state.sopas.size + ' sopas · ' + state.pratos.size + ' pratos — pronto!';
+      }
+    }
+
+    let estadoConfirmacao = false;
+    let timerConfirmacao;
+
+    function submitEmenta() {
+      document.getElementById('modalLocalText').textContent = state.local;
+      document.getElementById('confirmModal').classList.add('show');
+    }
+
+    function closeModal() {
+      document.getElementById('confirmModal').classList.remove('show');
+    }
+
+    async function realSubmitEmenta() {
+      closeModal();
+
+      const btn = document.getElementById('submitBtn');
+      const sub = document.getElementById('submitSub');
+      btn.disabled = true;
+      sub.textContent = 'A publicar...';
+
+      try {
+        const r = await fetch(WEBHOOK, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            local: state.local,
+            sopas: [...state.sopas],
+            pratos: [...state.pratos]
+          })
+        });
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        showSuccess();
+      } catch (e) {
+        showToast('Erro ao enviar. Tenta novamente.');
+        btn.disabled = false;
+        updateSubmit();
+      }
+    }
+
+    function showSuccess() {
+      const overlay = document.createElement('div');
+      overlay.style.cssText = 'position:fixed;inset:0;background:#071a07;z-index:1000;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;padding:32px;animation:fadeIn 0.3s ease';
+
+      overlay.innerHTML =
+        '<div style="width:88px;height:88px;border-radius:50%;background:#1E7A44;display:flex;align-items:center;justify-content:center;font-size:44px">✓</div>' +
+        '<div style="font-family:Oswald,sans-serif;font-size:26px;color:#fff;font-weight:600;text-align:center">Ementa Enviada!</div>' +
+        '<div style="font-size:12px;color:rgba(255,255,255,0.45);text-align:center">A ementa está a ser processada e enviada para as redes.</div>';
+
+      document.body.appendChild(overlay);
+
+      // Como tirámos o botão, a app fecha o ecrã verde sozinha passado 3.5 segundos!
+      setTimeout(() => {
+        resetForm();
+      }, 3500);
+    }
+
+    function resetForm() {
+      state = { local: null, sopas: new Set(), pratos: new Set() };
+      document.getElementById('btnI').classList.remove('active');
+      document.getElementById('btnO').classList.remove('active');
+      document.getElementById('sopaBadge').style.display = 'none';
+      document.getElementById('pratosCount').style.display = 'none';
+      document.getElementById('summaryBox').classList.remove('visible');
+      document.getElementById('sopaSearch').value = '';
+      document.getElementById('pratosSearch').value = '';
+      renderSopas(''); renderPratos('');
+      updateSubmit();
+      document.querySelector('[style*="071a07"]')?.remove();
+    }
+
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = msg; t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 2500);
+    }
+
+    // ── PIN ──────────────────────────────────────────────
+    const PINS_VALIDOS = ['<removed from history>']; // ← define aqui os 3 PINs
+    const PIN_MINUTOS = 10;
+    const PIN_KEY = 'sr_pin_oficial'; // ← A chave nova para obrigar a aparecer agora
+    let pinDigitos = '';
+
+    function checkPin() {
+      try {
+        const ts = parseInt(localStorage.getItem(PIN_KEY) || '0');
+        if (Date.now() - ts < PIN_MINUTOS * 60000) {
+          document.getElementById('pinScreen').classList.add('hidden');
+        }
+      } catch (e) { }
+    }
+
+    function pinPress(d) {
+      if (pinDigitos.length >= 4) return;
+      pinDigitos += d;
+      updatePinDots();
+      if (pinDigitos.length === 4) setTimeout(checkPinCode, 80);
+    }
+
+    function pinDel() {
+      pinDigitos = pinDigitos.slice(0, -1);
+      updatePinDots();
+      document.getElementById('pinErro').textContent = '';
+    }
+
+    function updatePinDots() {
+      for (let i = 0; i < 4; i++) {
+        document.getElementById('pd' + i).classList.toggle('filled', i < pinDigitos.length);
+      }
+    }
+
+    function checkPinCode() {
+      if (PINS_VALIDOS.includes(pinDigitos)) {
+        try { localStorage.setItem(PIN_KEY, Date.now().toString()); } catch (e) { }
+        document.getElementById('pinScreen').classList.add('hidden');
+        pinDigitos = ''; // Limpa os pontinhos em background
+        updatePinDots();
+      } else {
+        document.getElementById('pinErro').textContent = 'PIN incorrecto. Tenta novamente.';
+        const dots = document.getElementById('pinDots');
+
+        // Truque de mestre: forçar o CSS a reiniciar a animação
+        dots.style.animation = 'none';
+        void dots.offsetWidth; // Isto obriga o ecrã a atualizar
+        dots.style.animation = 'shake 0.4s ease';
+
+        setTimeout(() => {
+          pinDigitos = '';
+          updatePinDots();
+          document.getElementById('pinErro').textContent = '';
+        }, 700);
+      }
+    }
+
+    document.addEventListener('keydown', e => {
+      const pinVisible = !document.getElementById('pinScreen').classList.contains('hidden');
+      if (pinVisible) {
+        if (e.key >= '0' && e.key <= '9') pinPress(e.key);
+        if (e.key === 'Backspace') pinDel();
+        return;
+      }
+      if (e.key !== 'Enter') return;
+      if (document.activeElement.id === 'sopaNewInput') addNewSopa();
+      if (document.activeElement.id === 'pratoNewInput') addNewPrato();
+    });
+
+    // ── HACKS ANTI-ZOOM E ANTI-SCROLL PARA IOS ──
+
+    // 1. Bloqueia o duplo clique de fazer zoom
+    let lastTouchEnd = 0;
+    document.addEventListener('touchend', function (event) {
+      const now = (new Date()).getTime();
+      if (now - lastTouchEnd <= 300) {
+        event.preventDefault(); // Corta o zoom mal o dedo levanta a 2ª vez
+      }
+      lastTouchEnd = now;
+    }, { passive: false });
+
+    // 2. Bloqueia o "beliscão" (pinch) com dois dedos
+    document.addEventListener('gesturestart', function (event) {
+      event.preventDefault();
+    });
+
+    // 3. Previne que a página "estique" para cima/baixo (Rubber-band scroll) no ecrã do PIN
+    document.body.addEventListener('touchmove', function (event) {
+      const pinVisible = !document.getElementById('pinScreen').classList.contains('hidden');
+      if (pinVisible) {
+        event.preventDefault(); // Tranca o ecrã só quando o PIN está aberto
+      }
+    }, { passive: false });
+  </script>
+</body>
+
+</html>
