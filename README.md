@@ -40,7 +40,13 @@ The goal: **the people who know the menu tap a few options, and a brand-consiste
 5. **A Telegram message confirms it** with the location, the time and the platforms. If a stage fails, the pipeline quietly retries it. If it still fails, one message says what broke and includes the menu text and the image, so the Story can be posted by hand in seconds.
 6. **At 11:00 on opening days, a watchdog checks** that every location has published. If one hasn't, it sends a one-line reminder.
 
-<p align="center"><img src="assets/app-demo.gif" alt="Publishing a menu in the staff app (test data)" width="300"></p>
+**From the counter to Instagram.** Staff pick a real day's menu for Infantado; a dish that is not on the buttons ("Pato no Forno") is added through search. A minute later, this is the Story on Instagram and Facebook:
+
+| 1 · Staff pick the menu (demo against the test server) | 2 · What gets published |
+|:---:|:---:|
+| <img src="assets/app-demo.gif" alt="Picking the menu in the staff app" width="280"> | <img src="assets/04-story-example.jpg" alt="The published Story for Infantado" width="280"> |
+
+The last two lines of the Story ("Grelhados no Carvão", "Frango no Churrasco") are fixed in the template, so staff never have to pick them.
 
 ![Staff app: location, soups, dishes, stamped receipt](assets/03-staff-app.png)
 
