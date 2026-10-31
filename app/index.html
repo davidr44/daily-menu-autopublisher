@@ -124,12 +124,39 @@
 
     .results { margin: -4px 0 12px; background: var(--card); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }
     .results:empty { display: none; }
-    .searching + .tiles, .searching ~ .see-all, .searching ~ .all-list, .searching ~ .hint { display: none; }
+    /* Entrada da pesquisa */
+    .search-btn {
+      display: flex; align-items: center; gap: 12px; width: 100%; margin-bottom: 16px;
+      min-height: 56px; padding: 0 16px; border-radius: 16px; border: 1.5px solid var(--ink); background: var(--card);
+      font-size: 17px; font-weight: 600; color: var(--ink); text-align: left; cursor: pointer; touch-action: manipulation;
+      box-shadow: 0 2px 8px rgba(23, 24, 26, 0.06);
+    }
+    .search-btn:active { transform: scale(0.99); }
+    .search-btn .i { width: 22px; height: 22px; }
 
-    /* Pesquisa fixa no topo ao fazer scroll */
-    .sticky { position: sticky; top: 0; z-index: 20; background: var(--bg); padding-top: 8px; margin-top: -8px; }
-    .hint { text-align: center; font-size: 15px; color: var(--ink-2); margin: 20px 0 4px; line-height: 1.5; }
-    .hint-link { border: none; background: none; padding: 0; font-size: 15px; font-weight: 600; color: var(--ink); text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+    /* Lista completa (ecrã por cima) */
+    .picker {
+      position: fixed; inset: 0; z-index: 1500; background: var(--bg);
+      transform: translateY(100%); visibility: hidden;
+      transition: transform .3s var(--ease), visibility 0s linear .3s;
+    }
+    .picker.show { transform: none; visibility: visible; transition: transform .3s var(--ease); }
+    .pk-inner { max-width: 480px; height: 100%; margin: 0 auto; display: flex; flex-direction: column; padding: 16px 20px 0; }
+    .pk-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+    .pk-ttl { font-size: 28px; font-weight: 800; letter-spacing: -0.02em; }
+    .pk-x { width: 44px; height: 44px; margin-right: -10px; border: none; background: none; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+    .pk-x .i { width: 24px; height: 24px; }
+    .picker .search { margin-bottom: 12px; border: 1.5px solid var(--ink); color: var(--ink); }
+    .pk-list {
+      flex: 0 1 auto; min-height: 0; overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch;
+      background: var(--card); border: 1px solid var(--line); border-radius: 14px;
+    }
+    .pk-foot { margin-top: auto; padding: 12px 0 calc(16px + env(safe-area-inset-bottom)); }
+    .pk-foot .btn-main { width: 100%; }
+    .res .tag { color: inherit; }
+    .all-row.add { color: var(--red); font-weight: 600; }
+    .pk-empty { padding: 20px 16px; color: var(--ink-2); font-size: 15px; }
+
 
     /* Lista completa de pratos */
     .see-all {
@@ -137,8 +164,7 @@
       min-height: 52px; border-radius: 14px; border: 1px dashed rgba(23, 24, 26, 0.25); background: transparent;
       font-size: 16px; font-weight: 600; color: var(--ink); cursor: pointer; touch-action: manipulation;
     }
-    .see-all .i { width: 18px; height: 18px; transition: transform .2s var(--ease); }
-    .see-all.open .i { transform: rotate(180deg); }
+    .see-all .i { width: 18px; height: 18px; }
     .all-list { margin-top: 12px; background: var(--card); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }
     .all-letter { padding: 12px 16px 4px; font-size: 14px; font-weight: 800; color: var(--ink-2); background: var(--bg); border-bottom: 1px solid var(--line); }
     .all-row { display: block; width: 100%; text-align: left; padding: 14px 16px; border: none; border-bottom: 1px solid var(--line); background: var(--card); font-size: 16px; cursor: pointer; touch-action: manipulation; }
@@ -217,7 +243,7 @@
 
     /* Toast */
     .toast {
-      position: fixed; left: 50%; bottom: calc(104px + env(safe-area-inset-bottom)); z-index: 999;
+      position: fixed; left: 50%; bottom: calc(104px + env(safe-area-inset-bottom)); z-index: 3000;
       transform: translate(-50%, 12px); opacity: 0; pointer-events: none;
       background: var(--ink); color: #fff; padding: 12px 18px; border-radius: 12px;
       font-size: 15px; font-weight: 600; width: max-content; max-width: calc(100vw - 40px); text-align: center;
@@ -328,16 +354,8 @@
       <div class="step-n">Passo 2 de 4</div>
       <h1>Que sopas há hoje?</h1>
       <div class="sub" id="sopasSub">Escolhe até 2.</div>
-      <div class="sticky">
-      <div class="search" id="sopasSearchBox">
-        <svg class="i" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
-        <input id="sopasSearch" placeholder="Procurar outra sopa" autocomplete="off" autocorrect="off" spellcheck="false" oninput="onSearch('sopas')">
-        <button class="clear" onclick="clearSearch('sopas')" aria-label="Limpar pesquisa"><svg class="i" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>
-      </div>
-      </div>
-      <div class="results" id="sopasResults"></div>
+      <button class="search-btn" onclick="abrirLista('sopas', true)"><svg class="i" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><span>Procurar ou adicionar sopa</span></button>
       <div class="tiles" id="sopasTiles"></div>
-      <p class="hint">Não está aqui? <button class="hint-link" onclick="irPesquisa('sopas')">Escreve na pesquisa</button> para a adicionar.</p>
     </section>
 
     <!-- 3. Pratos -->
@@ -345,18 +363,9 @@
       <div class="step-n">Passo 3 de 4</div>
       <h1>Que pratos há hoje?</h1>
       <div class="sub" id="pratosSub">Escolhe todos os que houver.</div>
-      <div class="sticky">
-      <div class="search" id="pratosSearchBox">
-        <svg class="i" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
-        <input id="pratosSearch" placeholder="Procurar outro prato" autocomplete="off" autocorrect="off" spellcheck="false" oninput="onSearch('pratos')">
-        <button class="clear" onclick="clearSearch('pratos')" aria-label="Limpar pesquisa"><svg class="i" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>
-      </div>
-      </div>
-      <div class="results" id="pratosResults"></div>
+      <button class="search-btn" onclick="abrirLista('pratos', true)"><svg class="i" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><span>Procurar prato</span></button>
       <div class="tiles" id="pratosTiles"></div>
-      <p class="hint">Não está aqui? <button class="hint-link" onclick="irPesquisa('pratos')">Procura em cima</button> ou vê a lista toda.</p>
-      <button class="see-all" id="pratosSeeAll" onclick="toggleListaPratos()"></button>
-      <div class="all-list" id="pratosAll" hidden></div>
+      <button class="see-all" onclick="abrirLista('pratos', false)"><span id="pratosSeeAllTxt">Ver todos os pratos</span><svg class="i" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></svg></button>
     </section>
 
     <!-- 4. Confirmar -->
@@ -373,6 +382,22 @@
     <div class="foot-inner">
       <button class="btn-back" id="btnBack" onclick="goStep(current - 1)" aria-label="Voltar" hidden><svg class="i" viewBox="0 0 24 24" style="width:22px;height:22px"><path d="m15 6-6 6 6 6"/></svg></button>
       <button class="btn-main" id="btnMain" onclick="mainAction()" disabled>Escolhe o local</button>
+    </div>
+  </div>
+
+  <div class="picker" id="picker" aria-hidden="true">
+    <div class="pk-inner">
+      <div class="pk-head">
+        <div class="pk-ttl" id="pkTtl">Todos os pratos</div>
+        <button class="pk-x" onclick="fecharLista()" aria-label="Fechar"><svg class="i" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>
+      </div>
+      <div class="search" id="pkSearchBox">
+        <svg class="i" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        <input id="pkSearch" autocomplete="off" autocorrect="off" spellcheck="false" oninput="renderLista()">
+        <button class="clear" onclick="limparPesquisa()" aria-label="Limpar pesquisa"><svg class="i" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>
+      </div>
+      <div class="pk-list" id="pkList"></div>
+      <div class="pk-foot"><button class="btn-main" id="pkDone" onclick="fecharLista()">Feito</button></div>
     </div>
   </div>
 
@@ -495,7 +520,6 @@
       document.querySelectorAll('#progress i').forEach((i, k) => i.classList.toggle('on', k < n));
       document.getElementById('btnBack').hidden = n === 1;
       if (n === 4) renderReceipt();
-      clearSearch('sopas', true); clearSearch('pratos', true);
       updateMain();
       window.scrollTo(0, 0);
     }
@@ -571,38 +595,84 @@
       const n = sel.size;
       if (type === 'sopas') sub.textContent = n === 0 ? 'Escolhe até 2.' : (n === 1 ? '1 de 2 escolhida.' : '2 de 2 escolhidas.');
       else sub.textContent = n === 0 ? 'Escolhe todos os que houver.' : (n === 1 ? '1 prato escolhido.' : n + ' pratos escolhidos.');
+      if (type === 'pratos') document.getElementById('pratosSeeAllTxt').textContent = 'Ver todos os pratos (' + getAll('pratos').length + ')';
     }
 
-    function irPesquisa(type) {
-      const inp = document.getElementById(type + 'Search');
-      inp.scrollIntoView({ block: 'start', behavior: 'smooth' });
-      inp.focus({ preventScroll: true });
+    // ── Lista completa com pesquisa ──
+    let pkType = null;
+    function abrirLista(type, comTeclado) {
+      pkType = type;
+      document.getElementById('pkTtl').textContent = type === 'sopas' ? 'Todas as sopas' : 'Todos os pratos';
+      const inp = document.getElementById('pkSearch');
+      inp.value = '';
+      inp.placeholder = type === 'sopas' ? 'Procurar ou adicionar sopa' : 'Procurar ou adicionar prato';
+      renderLista();
+      document.getElementById('pkList').scrollTop = 0;
+      const pk = document.getElementById('picker');
+      pk.classList.add('show'); pk.setAttribute('aria-hidden', 'false');
+      if (comTeclado) inp.focus();
     }
-
-    let listaAberta = false;
-    function toggleListaPratos() {
-      listaAberta = !listaAberta;
-      renderListaPratos();
-      if (!listaAberta) document.getElementById('pratosSeeAll').scrollIntoView({ block: 'center' });
+    function fecharLista() {
+      document.getElementById('pkSearch').blur();
+      const pk = document.getElementById('picker');
+      pk.classList.remove('show'); pk.setAttribute('aria-hidden', 'true');
+      pkType = null;
     }
-    function renderListaPratos() {
-      const btn = document.getElementById('pratosSeeAll');
-      const box = document.getElementById('pratosAll');
-      const all = getAll('pratos');
-      btn.classList.toggle('open', listaAberta);
-      btn.innerHTML = (listaAberta ? 'Esconder a lista' : 'Ver todos os pratos (' + all.length + ')') +
-        '<svg class="i" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg>';
-      box.hidden = !listaAberta;
-      if (!listaAberta) { box.innerHTML = ''; return; }
-      const ord = [...all].sort((a, b) => a.localeCompare(b, 'pt', { sensitivity: 'base' }));
-      let h = '', letra = '';
-      ord.forEach(x => {
-        const L = limpaAcentos(x).charAt(0).toUpperCase();
-        if (L !== letra) { letra = L; h += '<div class="all-letter">' + esc(L) + '</div>'; }
-        h += `<button class="all-row${state.pratos.has(x) ? ' on' : ''}" data-v="${esc(x)}">${esc(x)}</button>`;
-      });
-      box.innerHTML = h;
+    function limparPesquisa() {
+      const inp = document.getElementById('pkSearch');
+      inp.value = ''; renderLista(); inp.focus();
     }
+    function renderLista() {
+      const type = pkType; if (!type) return;
+      const inp = document.getElementById('pkSearch');
+      const q = inp.value.trim();
+      document.getElementById('pkSearchBox').classList.toggle('has-text', inp.value.length > 0);
+      const all = getAll(type);
+      const sel = state[type];
+      const row = (x, html) => `<button class="all-row${sel.has(x) ? ' on' : ''}" data-v="${esc(x)}">${html || esc(x)}</button>`;
+      let h = '';
+      if (!q) {
+        const ord = [...all].sort((a, b) => a.localeCompare(b, 'pt', { sensitivity: 'base' }));
+        let letra = '';
+        ord.forEach(x => {
+          const L = limpaAcentos(x).charAt(0).toUpperCase();
+          if (L !== letra) { letra = L; h += '<div class="all-letter">' + esc(L) + '</div>'; }
+          h += row(x);
+        });
+      } else {
+        const f = limpaAcentos(q);
+        const hits = all.filter(x => limpaAcentos(x).includes(f)).sort((a, b) => {
+          const as = limpaAcentos(a).startsWith(f), bs = limpaAcentos(b).startsWith(f);
+          return as === bs ? a.localeCompare(b, 'pt') : (as ? -1 : 1);
+        });
+        const marca = x => {
+          const i = limpaAcentos(x).indexOf(f);
+          return esc(x.slice(0, i)) + '<b>' + esc(x.slice(i, i + q.length)) + '</b>' + esc(x.slice(i + q.length));
+        };
+        h = hits.map(x => row(x, marca(x))).join('');
+        if (!all.some(x => limpaAcentos(x) === f)) {
+          const nome = q.charAt(0).toUpperCase() + q.slice(1);
+          h += `<button class="all-row add" data-new="${esc(nome)}">+ Adicionar “${esc(nome)}” como ${type === 'sopas' ? 'sopa nova' : 'prato novo'}</button>`;
+        }
+      }
+      document.getElementById('pkList').innerHTML = h;
+      const n = sel.size;
+      document.getElementById('pkDone').textContent = n === 0 ? 'Feito' :
+        'Feito · ' + n + (type === 'sopas' ? (n === 1 ? ' sopa' : ' sopas') : (n === 1 ? ' prato' : ' pratos'));
+    }
+    document.getElementById('pkList').addEventListener('click', e => {
+      const r = e.target.closest('.all-row'); if (!r || !pkType) return;
+      const type = pkType;
+      if (r.dataset.new) {
+        const v = r.dataset.new;
+        saveExtra(type, v);
+        if (!state[type].has(v) && toggle(type, v)) showToast('“' + v + '” adicionad' + (type === 'sopas' ? 'a' : 'o') + ' à lista');
+        document.getElementById('pkSearch').value = '';
+        renderLista();
+        return;
+      }
+      toggle(type, r.dataset.v);
+    });
 
     function toggle(type, v) {
       const sel = state[type];
@@ -610,68 +680,13 @@
       else if (type === 'sopas' && sel.size >= 2) { showToast('Máximo 2 sopas. Tira uma para escolher outra.'); return false; }
       else sel.add(v);
       renderTiles(type); updateMain();
-      if (type === 'pratos' && listaAberta) renderListaPratos();
+      if (pkType === type) renderLista();
       return true;
     }
-
-    function onSearch(type) {
-      const inp = document.getElementById(type + 'Search');
-      const box = document.getElementById(type + 'SearchBox');
-      const out = document.getElementById(type + 'Results');
-      const q = inp.value.trim();
-      box.classList.toggle('has-text', inp.value.length > 0);
-      out.classList.toggle('searching', !!q);
-      if (!q) { out.innerHTML = ''; return; }
-      const f = limpaAcentos(q);
-      const all = getAll(type);
-      const hits = all.filter(x => limpaAcentos(x).includes(f)).sort((a, b) => {
-        const as = limpaAcentos(a).startsWith(f), bs = limpaAcentos(b).startsWith(f);
-        return as === bs ? 0 : (as ? -1 : 1);
-      }).slice(0, 8);
-      const marca = x => {
-        const i = limpaAcentos(x).indexOf(f);
-        return esc(x.slice(0, i)) + '<b>' + esc(x.slice(i, i + q.length)) + '</b>' + esc(x.slice(i + q.length));
-      };
-      let h = hits.map(x =>
-        `<button class="res" data-v="${esc(x)}"><span>${marca(x)}</span>${state[type].has(x) ? '<span class="tag">Escolhida</span>' : ''}</button>`
-      ).join('');
-      const existe = all.some(x => limpaAcentos(x) === f);
-      if (!existe) {
-        const nome = q.charAt(0).toUpperCase() + q.slice(1);
-        h += `<button class="res add" data-new="${esc(nome)}">+ Adicionar “${esc(nome)}” como ${type === 'sopas' ? 'sopa nova' : 'prato novo'}</button>`;
-      }
-      out.innerHTML = h;
-    }
-
-    function clearSearch(type, silent) {
-      const inp = document.getElementById(type + 'Search');
-      inp.value = '';
-      document.getElementById(type + 'SearchBox').classList.remove('has-text');
-      const out = document.getElementById(type + 'Results');
-      out.innerHTML = ''; out.classList.remove('searching');
-      if (!silent) inp.focus();
-    }
-
-    function pickFromSearch(type, v, isNew) {
-      if (isNew) saveExtra(type, v);
-      const ok = state[type].has(v) || toggle(type, v);
-      if (ok && isNew) showToast('“' + v + '” adicionad' + (type === 'sopas' ? 'a' : 'o') + ' à lista');
-      clearSearch(type, true);
-      document.getElementById(type + 'Search').blur();
-    }
-
-    document.getElementById('pratosAll').addEventListener('click', e => {
-      const r = e.target.closest('.all-row'); if (r) toggle('pratos', r.dataset.v);
-    });
 
     ['sopas', 'pratos'].forEach(type => {
       document.getElementById(type + 'Tiles').addEventListener('click', e => {
         const t = e.target.closest('.tile'); if (t) toggle(type, t.dataset.v);
-      });
-      document.getElementById(type + 'Results').addEventListener('click', e => {
-        const r = e.target.closest('.res'); if (!r) return;
-        if (r.dataset.new) pickFromSearch(type, r.dataset.new, true);
-        else pickFromSearch(type, r.dataset.v, false);
       });
     });
 
@@ -731,8 +746,8 @@
       document.getElementById('btnO').classList.remove('on');
       const p = document.getElementById('localPill');
       document.getElementById('localPillTxt').textContent = ''; p.classList.add('placeholder');
-      listaAberta = false;
-      renderTiles('sopas'); renderTiles('pratos'); renderListaPratos();
+      fecharLista();
+      renderTiles('sopas'); renderTiles('pratos');
       document.getElementById('successOverlay')?.remove();
       goStep(1);
     }
@@ -747,7 +762,7 @@
     document.addEventListener('DOMContentLoaded', () => {
       checkPin();
       document.getElementById('dateLine').textContent = hoje();
-      renderTiles('sopas'); renderTiles('pratos'); renderListaPratos();
+      renderTiles('sopas'); renderTiles('pratos');
       goStep(1);
     });
 
@@ -813,10 +828,9 @@
         return;
       }
       if (e.key !== 'Enter') return;
-      const id = document.activeElement && document.activeElement.id;
-      const type = id === 'sopasSearch' ? 'sopas' : id === 'pratosSearch' ? 'pratos' : null;
-      if (!type) return;
-      const first = document.querySelector('#' + type + 'Results .res');
+      if (!(document.activeElement && document.activeElement.id === 'pkSearch')) return;
+      if (!document.getElementById('pkSearch').value.trim()) return;
+      const first = document.querySelector('#pkList .all-row:not(.add)');
       if (first) first.click();
     });
 
