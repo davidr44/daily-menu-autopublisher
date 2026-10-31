@@ -744,7 +744,12 @@
       // Bug conhecido do Safari no iPhone: se a lista está mesmo no topo (ou no fim), o 1.º deslize
       // vai para a página de trás (que está presa) e parece tudo travado. Afastar a lista 1px do
       // limite antes de cada toque garante que o deslize fica sempre na lista.
+      // Como nas apps do iPhone (Contactos, WhatsApp): mexer na lista fecha o teclado.
+      // Com o teclado aberto, o Safari desloca o ecrã inteiro em vez de deslizar a lista;
+      // sem teclado, a lista desliza sempre e nada mais mexe.
+      const inp = document.getElementById('pkSearch');
       lista.addEventListener('touchstart', () => {
+        if (document.activeElement === inp) inp.blur();
         const max = lista.scrollHeight - lista.clientHeight;
         if (max <= 0) return;
         if (lista.scrollTop <= 0) lista.scrollTop = 1;
