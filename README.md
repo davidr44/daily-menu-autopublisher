@@ -127,7 +127,7 @@ In October 2026 I rebuilt the app around that idea (the full history is in the c
 - **Small things that prevent bad days.** A draft survives the app closing mid-way (15 minutes), dishes added by mistake can be deleted, and the end screen is the same receipt with a timestamped "sent" stamp, so staff see exactly what went out.
 
 ### 11. No secrets in the browser
-The first version checked the PIN in the page and posted straight to the Make webhook. The current version ships no secrets: two Netlify Functions check the PIN, validate the menu (known location, 1–2 soups, sensible lengths) and only then forward `{local, sopas, pratos}` to Make. PINs and the webhook URL live in environment variables.
+The first version checked the PIN in the page and posted straight to the Make webhook. The current version ships no secrets: two Netlify Functions check the PIN, validate the menu (known location, 1–2 soups, sensible lengths) and only then forward `{local, sopas, pratos}` to Make. PINs, the webhook URL and the webhook's API key live in environment variables, and the Make webhook rejects any request without that key, so knowing the URL alone is not enough.
 
 ---
 

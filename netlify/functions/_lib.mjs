@@ -1,6 +1,7 @@
 // Regras partilhadas pelas funções. Os segredos vivem só em variáveis de ambiente do Netlify:
 //   PINS             PINs válidos, separados por vírgulas
 //   MAKE_WEBHOOK_URL endereço do webhook do cenário no Make
+//   MAKE_API_KEY     chave que o webhook do Make exige no cabeçalho x-make-apikey
 
 export const LOCAIS = ['Infantado', 'Odivelas'];
 const MAX_TEXTO = 80;

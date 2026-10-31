@@ -15,9 +15,12 @@ export default async (req) => {
   if (!destino) return json({ ok: false, erro: 'configuracao' }, 500);
 
   try {
+    const headers = { 'content-type': 'application/json' };
+    // O webhook do Make só aceita pedidos com esta chave; sem ela, o endereço sozinho não serve de nada
+    if (process.env.MAKE_API_KEY) headers['x-make-apikey'] = process.env.MAKE_API_KEY;
     const r = await fetch(destino, {
       method: 'POST',
-      headers: { 'content-type': 'application/json' },
+      headers,
       body: JSON.stringify(ementa),
     });
     if (!r.ok) return json({ ok: false, erro: 'make' }, 502);

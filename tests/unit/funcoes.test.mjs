@@ -20,7 +20,7 @@ beforeEach(() => {
   Object.assign(process.env, env);
   enviados = [];
   globalThis.fetch = async (url, opcoes) => {
-    enviados.push({ url, corpo: JSON.parse(opcoes.body) });
+    enviados.push({ url, corpo: JSON.parse(opcoes.body), headers: opcoes.headers });
     return new Response('Accepted', { status: 200 });
   };
 });
@@ -57,6 +57,13 @@ test('/api/publicar: com PIN certo envia ao Make só local, sopas e pratos', asy
   assert.equal(enviados.length, 1);
   assert.equal(enviados[0].url, env.MAKE_WEBHOOK_URL);
   assert.deepEqual(enviados[0].corpo, ementa); // o PIN nunca segue para o Make
+});
+
+test('/api/publicar: envia a chave do webhook no cabeçalho, se estiver configurada', async () => {
+  process.env.MAKE_API_KEY = 'chave-de-teste';
+  await publicar(pedido('/api/publicar', { pin: '1234', ...ementa }));
+  assert.equal(enviados[0].headers['x-make-apikey'], 'chave-de-teste');
+  delete process.env.MAKE_API_KEY;
 });
 
 test('/api/publicar: PIN errado não chega ao Make', async () => {
