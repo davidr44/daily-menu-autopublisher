@@ -3,27 +3,36 @@
 
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#F6F2EC">
   <title>Ementa SR</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link
-    href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;600;700&family=DM+Sans:wght@300;400;500&display=swap"
+    href="https://fonts.googleapis.com/css2?family=Bree+Serif&family=Montserrat:wght@400;500;600&display=swap"
     rel="stylesheet">
   <style>
     :root {
-      --red: #CC1010;
-      --red-deep: #A00C0C;
-      --red-glow: rgba(204, 16, 16, 0.18);
-      --black: #0A0A0A;
-      --surface: #161616;
-      --panel: #1E1E1E;
-      --panel2: #262626;
-      --border: rgba(255, 255, 255, 0.07);
-      --ash: #888;
-      --light: #D0C8C0;
-      --white: #F5F5F5;
-      --success: #1E7A44;
-      --radius: 12px;
-      --radius-sm: 8px;
+      /* Neutros quentes (papel, balcão) */
+      --bg: #F6F2EC;
+      --surface: #FFFFFF;
+      --surface-2: #FBF8F4;
+      --line: rgba(40, 28, 18, 0.10);
+      --line-strong: rgba(40, 28, 18, 0.18);
+      --text: #1F1A16;
+      --text-2: #5C544D;
+      --muted: #8E857C;
+
+      /* Marca: o mesmo vermelho da Story */
+      --red: #CA2915;
+      --red-ink: #A82110;
+      --red-tint: #FBEDEA;
+
+      --ok: #2E7D4F;
+
+      --r-sm: 10px;
+      --r: 14px;
+      --ease: cubic-bezier(0.2, 0, 0, 1);
     }
 
     * {
@@ -34,133 +43,139 @@
     }
 
     body {
-      font-family: 'DM Sans', sans-serif;
-      background: var(--black);
-      color: var(--light);
+      font-family: 'Montserrat', system-ui, sans-serif;
+      font-size: 16px;
+      background: var(--bg);
+      color: var(--text);
       min-height: 100vh;
-      padding-bottom: 48px;
-
-      /* AS NOVAS LINHAS ANTI-SELEÇÃO: */
+      -webkit-font-smoothing: antialiased;
       -webkit-user-select: none;
-      /* Safari e iPhone */
-      -moz-user-select: none;
-      /* Firefox */
-      -ms-user-select: none;
-      /* Internet Explorer/Edge */
       user-select: none;
-      /* O standard para os restantes (Android/Chrome) */
       -webkit-touch-callout: none;
-      /* Desativa o menu de "Copiar/Colar" no iPhone se ficares a carregar! */
     }
 
-    .header {
-      background: var(--red);
-      border-bottom: 3px solid var(--red-deep);
+    input {
+      -webkit-user-select: auto;
+      user-select: auto;
     }
 
-    .header-inner {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      padding: 14px 16px 16px;
-    }
-
-    .header-logo {
-      width: 64px;
-      height: 64px;
-      border-radius: 50%;
-      object-fit: cover;
-      border: 3px solid rgba(255, 255, 255, 0.25);
+    svg.i {
+      width: 18px;
+      height: 18px;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 1.75;
+      stroke-linecap: round;
+      stroke-linejoin: round;
       flex-shrink: 0;
     }
 
-    .header-text h1 {
-      font-family: 'Oswald', sans-serif;
-      font-size: 22px;
-      font-weight: 700;
-      color: #fff;
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
+    /* ── Cabeçalho ── */
+    .header {
+      background: var(--surface);
+      border-top: 4px solid var(--red);
+      border-bottom: 1px solid var(--line);
     }
 
-    .header-text .sub {
-      font-size: 12px;
-      color: rgba(255, 255, 255, 0.7);
-      margin-top: 2px;
+    .header-inner {
+      max-width: 480px;
+      margin: 0 auto;
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .header-logo {
+      height: 44px;
+      width: auto;
+      display: block;
+    }
+
+    .header-meta {
+      text-align: right;
+    }
+
+    .header-title {
+      font-family: 'Bree Serif', serif;
+      font-size: 18px;
+      color: var(--text);
+      line-height: 1.2;
     }
 
     .header-date {
-      background: var(--red-deep);
-      padding: 6px 16px;
-      font-size: 11px;
-      color: rgba(255, 255, 255, 0.75);
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
+      font-size: 13px;
+      color: var(--muted);
+      margin-top: 2px;
     }
 
-    /* MARGEM AUMENTADA: Passou de 16px para 30px nas laterais para criar a zona segura de scroll */
+    /* ── Conteúdo ── */
     .content {
-      padding: 20px 30px;
       max-width: 480px;
       margin: 0 auto;
+      padding: 24px 20px 140px;
     }
 
     .section {
-      margin-bottom: 22px;
+      margin-bottom: 32px;
+    }
+
+    .section-head {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      margin-bottom: 12px;
     }
 
     .section-label {
-      font-family: 'Oswald', sans-serif;
-      font-size: 14px;
-      font-weight: 600;
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
-      color: var(--red);
-      margin-bottom: 10px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
+      font-family: 'Bree Serif', serif;
+      font-size: 22px;
+      color: var(--text);
     }
 
-    .section-label::after {
-      content: '';
-      flex: 1;
-      height: 1px;
-      background: rgba(204, 16, 16, 0.22);
+    .count-badge {
+      display: none;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--red-ink);
+      font-variant-numeric: tabular-nums;
     }
 
+    /* ── Local ── */
     .local-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 10px;
+      gap: 12px;
     }
 
     .local-btn {
-      background: var(--panel);
-      border: 2px solid transparent;
-      border-radius: var(--radius);
-      padding: 14px 10px;
+      position: relative;
+      background: var(--surface);
+      border: 1px solid var(--line-strong);
+      border-radius: var(--r);
+      padding: 20px 12px;
       text-align: center;
       cursor: pointer;
-      transition: all 0.16s;
-      color: var(--ash);
+      color: var(--text-2);
+      transition: background-color .15s var(--ease), border-color .15s var(--ease), color .15s var(--ease);
+      touch-action: manipulation;
     }
 
     .local-btn .lname {
-      font-family: 'Oswald', sans-serif;
-      font-size: 18px;
-      font-weight: 600;
+      font-family: 'Bree Serif', serif;
+      font-size: 20px;
       display: block;
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
     }
 
     .local-btn.active {
-      background: var(--red-glow);
+      background: var(--red-tint);
       border-color: var(--red);
-      color: var(--white);
+      color: var(--red-ink);
+      box-shadow: inset 0 0 0 1px var(--red);
     }
 
+    /* ── Pesquisa ── */
     .search-wrap {
       position: relative;
       margin-bottom: 8px;
@@ -168,104 +183,125 @@
 
     .search-icon {
       position: absolute;
-      left: 11px;
+      left: 14px;
       top: 50%;
       transform: translateY(-50%);
-      font-size: 14px;
+      color: var(--muted);
+      display: flex;
       pointer-events: none;
-      opacity: 0.35;
     }
 
     .search-input {
       width: 100%;
-      background: var(--panel);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
-      padding: 11px 12px 11px 34px;
-      font-family: 'DM Sans', sans-serif;
-      font-size: 14px;
-      color: var(--white);
+      background: var(--surface);
+      border: 1px solid var(--line-strong);
+      border-radius: var(--r-sm);
+      padding: 12px 12px 12px 44px;
+      font-family: inherit;
+      font-size: 16px;
+      color: var(--text);
       outline: none;
+      transition: border-color .15s var(--ease);
     }
 
-    .search-input::placeholder {
-      color: var(--ash);
+    .search-input::placeholder,
+    .add-input::placeholder {
+      color: var(--muted);
     }
 
-    .search-input:focus {
-      border-color: rgba(204, 16, 16, 0.55);
+    .search-input:focus,
+    .add-input:focus {
+      border-color: var(--text-2);
     }
 
-    /* SCROLL INTERNO RESTAURADO */
+    /* ── Listas ── */
     .dishes-list {
-      background: var(--panel);
-      border-radius: var(--radius);
-      overflow: hidden;
-      border: 1px solid var(--border);
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--r);
       max-height: 340px;
       overflow-y: auto;
       scrollbar-width: thin;
+      overscroll-behavior: contain;
     }
 
     .dish-item {
       display: flex;
       align-items: center;
       gap: 12px;
-      padding: 13px 16px;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      min-height: 52px;
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--line);
       cursor: pointer;
-      transition: background 0.12s;
-      user-select: none;
+      transition: background-color .12s var(--ease);
     }
 
     .dish-item:last-child {
       border-bottom: none;
     }
 
+    .dish-item:active {
+      background: var(--surface-2);
+    }
+
     .dish-item.selected {
-      background: rgba(204, 16, 16, 0.1);
+      background: var(--red-tint);
     }
 
     .dish-check {
-      width: 20px;
-      height: 20px;
+      width: 22px;
+      height: 22px;
       border-radius: 6px;
-      border: 2px solid rgba(255, 255, 255, 0.12);
+      border: 1.5px solid var(--line-strong);
       flex-shrink: 0;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 11px;
-      transition: all 0.13s;
+      color: #fff;
+      transition: background-color .12s var(--ease), border-color .12s var(--ease);
+    }
+
+    .dish-check svg {
+      width: 14px;
+      height: 14px;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 3;
+      stroke-linecap: round;
+      stroke-linejoin: round;
     }
 
     .dish-item.selected .dish-check {
       background: var(--red);
       border-color: var(--red);
-      color: #fff;
     }
 
     .dish-name {
-      font-size: 14px;
-      color: var(--light);
+      font-size: 16px;
+      color: var(--text);
       flex: 1;
+      line-height: 1.35;
     }
 
     .dish-item.selected .dish-name {
-      color: var(--white);
       font-weight: 500;
     }
 
-    .dish-badge {
-      font-size: 10px;
-      background: rgba(204, 16, 16, 0.2);
-      color: rgba(255, 100, 100, 0.9);
-      padding: 2px 7px;
-      border-radius: 10px;
+    .dish-tag {
+      font-size: 12px;
+      color: var(--muted);
       white-space: nowrap;
       flex-shrink: 0;
     }
 
+    .empty-state {
+      text-align: center;
+      padding: 20px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    /* ── Adicionar ── */
     .add-row {
       display: flex;
       gap: 8px;
@@ -274,54 +310,46 @@
 
     .add-input {
       flex: 1;
-      background: var(--panel);
-      border: 1px dashed rgba(204, 16, 16, 0.35);
-      border-radius: var(--radius-sm);
-      padding: 10px 12px;
-      font-family: 'DM Sans', sans-serif;
-      font-size: 13px;
-      color: var(--white);
+      min-width: 0;
+      background: transparent;
+      border: 1px dashed var(--line-strong);
+      border-radius: var(--r-sm);
+      padding: 12px;
+      font-family: inherit;
+      font-size: 16px;
+      color: var(--text);
       outline: none;
     }
 
-    .add-input::placeholder {
-      color: rgba(204, 16, 16, 0.45);
-    }
-
-    .add-input:focus {
-      border-color: var(--red);
-    }
-
     .add-btn {
-      background: rgba(204, 16, 16, 0.18);
-      border: 1px solid var(--red);
-      border-radius: var(--radius-sm);
-      color: rgba(255, 100, 100, 0.9);
-      padding: 10px 16px;
-      font-size: 20px;
+      width: 48px;
+      background: var(--surface);
+      border: 1px solid var(--line-strong);
+      border-radius: var(--r-sm);
+      color: var(--text);
       cursor: pointer;
-      line-height: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      touch-action: manipulation;
     }
 
-    .count-badge {
-      display: none;
-      background: var(--red);
-      color: #fff;
-      font-size: 11px;
-      font-weight: 700;
-      border-radius: 10px;
-      padding: 1px 7px;
-      margin-left: 5px;
-      vertical-align: middle;
+    .add-btn:active {
+      background: var(--surface-2);
     }
 
+    /* ── Resumo: o talão ── */
     .summary-box {
-      background: rgba(204, 16, 16, 0.07);
-      border: 1px solid rgba(204, 16, 16, 0.2);
-      border-radius: var(--radius);
-      padding: 14px 16px;
-      margin-bottom: 20px;
       display: none;
+      position: relative;
+      background: var(--surface);
+      padding: 24px 20px 20px;
+      margin: 0 4px 24px;
+      box-shadow: 0 1px 2px rgba(40, 28, 18, 0.06), 0 8px 24px rgba(40, 28, 18, 0.06);
+      -webkit-mask: radial-gradient(circle 6px at 50% 0, transparent 98%, #000) 0 0 / 16px 51% repeat-x,
+        radial-gradient(circle 6px at 50% 100%, transparent 98%, #000) 0 100% / 16px 51% repeat-x;
+      mask: radial-gradient(circle 6px at 50% 0, transparent 98%, #000) 0 0 / 16px 51% repeat-x,
+        radial-gradient(circle 6px at 50% 100%, transparent 98%, #000) 0 100% / 16px 51% repeat-x;
     }
 
     .summary-box.visible {
@@ -329,106 +357,128 @@
     }
 
     .summary-ttl {
-      font-family: 'Oswald', sans-serif;
-      font-size: 11px;
-      font-weight: 600;
-      color: var(--red);
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      margin-bottom: 10px;
+      font-size: 12px;
+      color: var(--muted);
+      text-align: center;
+      letter-spacing: 0.02em;
     }
 
     .summary-local {
-      font-family: 'Oswald', sans-serif;
+      font-family: 'Bree Serif', serif;
+      font-size: 24px;
+      color: var(--red);
+      text-align: center;
+      margin-top: 4px;
+    }
+
+    .summary-rule {
+      border: none;
+      border-top: 1px dashed var(--line-strong);
+      margin: 16px 0;
+    }
+
+    .summary-group+.summary-group {
+      margin-top: 16px;
+    }
+
+    .summary-group-ttl {
+      font-family: 'Bree Serif', serif;
       font-size: 16px;
-      font-weight: 600;
-      color: var(--white);
-      margin-bottom: 6px;
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
+      color: var(--text);
+      margin-bottom: 4px;
     }
 
     .summary-line {
-      font-size: 13px;
-      color: var(--ash);
-      line-height: 1.65;
+      font-size: 15px;
+      color: var(--text-2);
+      line-height: 1.6;
     }
 
-    .summary-line strong {
-      color: var(--light);
-      font-weight: 500;
+    .summary-empty {
+      font-size: 14px;
+      color: var(--muted);
+      text-align: center;
+    }
+
+    /* ── Botão publicar (fixo em baixo) ── */
+    .submit-bar {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(to top, var(--bg) 70%, rgba(246, 242, 236, 0));
+      padding: 24px 20px calc(16px + env(safe-area-inset-bottom));
+      z-index: 50;
     }
 
     .submit-btn {
+      display: block;
       width: 100%;
+      max-width: 440px;
+      margin: 0 auto;
       background: var(--red);
       border: none;
-      border-radius: var(--radius);
+      border-radius: var(--r);
       color: #fff;
-      font-family: 'Oswald', sans-serif;
-      font-size: 18px;
-      font-weight: 600;
-      padding: 18px;
+      font-family: 'Bree Serif', serif;
+      font-size: 20px;
+      padding: 16px;
       cursor: pointer;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      transition: all 0.16s;
+      transition: background-color .15s var(--ease), transform .1s var(--ease);
+      touch-action: manipulation;
+    }
+
+    .submit-btn:active:not(:disabled) {
+      transform: scale(0.98);
     }
 
     .submit-btn:disabled {
-      background: var(--panel2);
-      color: var(--ash);
+      background: #E7E1D9;
+      color: var(--muted);
       cursor: not-allowed;
     }
 
     .submit-sub {
       display: block;
-      font-family: 'DM Sans', sans-serif;
-      font-size: 11px;
-      font-weight: 400;
-      opacity: 0.75;
-      margin-top: 3px;
-      text-transform: none;
-      letter-spacing: 0;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 13px;
+      opacity: 0.85;
+      margin-top: 2px;
     }
 
+    /* ── Toast ── */
     .toast {
       position: fixed;
-      bottom: 24px;
+      bottom: 112px;
       left: 50%;
-      transform: translateX(-50%) translateY(80px);
-      background: var(--success);
+      transform: translate(-50%, 12px);
+      opacity: 0;
+      background: var(--text);
       color: #fff;
-      padding: 12px 22px;
-      border-radius: 30px;
+      padding: 12px 20px;
+      border-radius: var(--r-sm);
       font-size: 14px;
       font-weight: 500;
       white-space: nowrap;
       z-index: 999;
-      transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      transition: transform .2s var(--ease), opacity .2s var(--ease);
       pointer-events: none;
     }
 
     .toast.show {
-      transform: translateX(-50%) translateY(0);
-    }
-
-    .empty-state {
-      text-align: center;
-      padding: 18px;
-      color: var(--ash);
-      font-size: 13px;
+      transform: translate(-50%, 0);
+      opacity: 1;
     }
 
     @keyframes fadeIn {
       from {
         opacity: 0;
-        transform: scale(0.96);
+        transform: translateY(8px);
       }
 
       to {
         opacity: 1;
-        transform: scale(1);
+        transform: translateY(0);
       }
     }
 
@@ -456,18 +506,17 @@
       }
     }
 
-    /* ── PIN SCREEN ── */
+    /* ── PIN ── */
     .pin-screen {
       position: fixed;
       inset: 0;
-      background: var(--black);
+      background: var(--bg);
       z-index: 9999;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      gap: 24px;
-      padding: 32px;
+      padding: 32px 24px;
     }
 
     .pin-screen.hidden {
@@ -475,41 +524,37 @@
     }
 
     .pin-logo {
-      width: 80px;
-      height: 80px;
-      border-radius: 50%;
-      object-fit: cover;
-      border: 3px solid var(--red);
+      height: 64px;
+      width: auto;
+      margin-bottom: 24px;
     }
 
     .pin-title {
-      font-family: 'Oswald', sans-serif;
-      font-size: 20px;
-      font-weight: 600;
-      color: var(--white);
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
+      font-family: 'Bree Serif', serif;
+      font-size: 26px;
+      color: var(--text);
       text-align: center;
     }
 
     .pin-sub {
-      font-size: 13px;
-      color: var(--ash);
+      font-size: 15px;
+      color: var(--text-2);
       text-align: center;
-      margin-top: -16px;
+      margin-top: 4px;
     }
 
     .pin-dots {
       display: flex;
-      gap: 14px;
+      gap: 16px;
+      margin-top: 28px;
     }
 
     .pin-dot {
       width: 14px;
       height: 14px;
       border-radius: 50%;
-      border: 2px solid rgba(255, 255, 255, 0.2);
-      transition: all 0.15s;
+      border: 1.5px solid var(--line-strong);
+      transition: background-color .12s var(--ease), border-color .12s var(--ease);
     }
 
     .pin-dot.filled {
@@ -517,49 +562,58 @@
       border-color: var(--red);
     }
 
+    .pin-error {
+      font-size: 14px;
+      color: var(--red-ink);
+      text-align: center;
+      min-height: 20px;
+      margin: 12px 0 16px;
+      font-weight: 500;
+    }
+
     .pin-pad {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 10px;
+      gap: 12px;
       width: 100%;
-      max-width: 270px;
+      max-width: 288px;
     }
 
     .pin-btn {
-      background: var(--panel);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 18px;
-      font-family: 'Oswald', sans-serif;
-      font-size: 22px;
-      font-weight: 600;
-      color: var(--white);
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--r);
+      font-family: 'Montserrat', sans-serif;
+      font-size: 24px;
+      font-weight: 500;
+      color: var(--text);
       cursor: pointer;
-      text-align: center;
-      transition: all 0.1s;
-      user-select: none;
       min-height: 64px;
       display: flex;
       align-items: center;
       justify-content: center;
+      font-variant-numeric: tabular-nums;
+      transition: background-color .1s var(--ease), transform .1s var(--ease);
       touch-action: manipulation;
-      /* ISTO É NOVO: Diz à Apple para NÃO fazer zoom no duplo clique rápido! */
+      box-shadow: 0 1px 2px rgba(40, 28, 18, 0.05);
     }
 
     .pin-btn:active {
-      background: rgba(204, 16, 16, 0.15);
-      border-color: var(--red);
-      transform: scale(0.95);
+      background: var(--surface-2);
+      transform: scale(0.96);
     }
 
     .pin-btn.del {
-      font-size: 18px;
-      color: var(--ash);
+      color: var(--text-2);
+      background: transparent;
+      border-color: transparent;
+      box-shadow: none;
     }
 
     .pin-btn.empty {
       background: transparent;
       border: none;
+      box-shadow: none;
       cursor: default;
     }
 
@@ -567,27 +621,18 @@
       transform: none;
     }
 
-    .pin-error {
-      font-size: 13px;
-      color: var(--red);
-      text-align: center;
-      min-height: 18px;
-      font-weight: 500;
-    }
-
-    /* ── POP-UP DE CONFIRMAÇÃO PREMIUM ── */
+    /* ── Confirmação ── */
     .modal-overlay {
       position: fixed;
       inset: 0;
-      background: rgba(0, 0, 0, 0.8);
-      backdrop-filter: blur(4px);
+      background: rgba(31, 26, 22, 0.45);
       display: flex;
-      align-items: center;
+      align-items: flex-end;
       justify-content: center;
       z-index: 2000;
       opacity: 0;
       pointer-events: none;
-      transition: all 0.2s ease;
+      transition: opacity .2s var(--ease);
     }
 
     .modal-overlay.show {
@@ -596,31 +641,36 @@
     }
 
     .modal-box {
-      background: var(--panel);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 24px;
-      width: 90%;
-      max-width: 320px;
-      text-align: center;
-      transform: translateY(20px);
-      transition: all 0.25s ease;
+      background: var(--surface);
+      border-radius: 20px 20px 0 0;
+      padding: 28px 20px calc(20px + env(safe-area-inset-bottom));
+      width: 100%;
+      max-width: 480px;
+      transform: translateY(24px);
+      transition: transform .25s var(--ease);
     }
 
     .modal-overlay.show .modal-box {
       transform: translateY(0);
     }
 
+    .modal-title {
+      font-family: 'Bree Serif', serif;
+      font-size: 22px;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+
     .modal-text {
-      font-size: 16px;
-      color: var(--ash);
+      font-size: 15px;
+      color: var(--text-2);
       margin-bottom: 24px;
-      line-height: 1.6;
+      line-height: 1.5;
     }
 
     .modal-text strong {
-      color: var(--white);
-      font-weight: 700;
+      color: var(--text);
+      font-weight: 600;
     }
 
     .modal-actions {
@@ -628,48 +678,84 @@
       gap: 12px;
     }
 
-    .btn-cancel {
+    .btn-cancel,
+    .btn-confirm {
       flex: 1;
-      padding: 14px;
-      background: transparent;
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
-      color: var(--light);
-      font-family: 'DM Sans', sans-serif;
-      font-weight: 500;
-      font-size: 15px;
+      padding: 16px;
+      border-radius: var(--r-sm);
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 600;
+      font-size: 16px;
       cursor: pointer;
-      transition: background 0.2s;
+      touch-action: manipulation;
     }
 
-    .btn-cancel:active {
-      background: rgba(255, 255, 255, 0.05);
+    .btn-cancel {
+      background: var(--surface);
+      border: 1px solid var(--line-strong);
+      color: var(--text);
     }
 
     .btn-confirm {
-      flex: 1;
-      padding: 14px;
-      background: var(--success);
+      background: var(--red);
       border: none;
-      border-radius: var(--radius-sm);
       color: #fff;
-      font-family: 'DM Sans', sans-serif;
-      font-weight: 600;
-      font-size: 15px;
-      cursor: pointer;
-      box-shadow: 0 4px 12px rgba(30, 122, 68, 0.3);
     }
 
+    .btn-cancel:active,
     .btn-confirm:active {
-      transform: scale(0.96);
+      transform: scale(0.98);
     }
 
-    /* Garantir que as caixas de pesquisa e de adicionar pratos deixam escrever e selecionar texto! */
-    input {
-      -webkit-user-select: auto;
-      -moz-user-select: auto;
-      -ms-user-select: auto;
-      user-select: auto;
+    /* ── Enviada ── */
+    .success {
+      position: fixed;
+      inset: 0;
+      background: var(--bg);
+      z-index: 1000;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      padding: 32px;
+      text-align: center;
+      animation: fadeIn .3s var(--ease);
+    }
+
+    .success-mark {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: var(--ok);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 8px;
+    }
+
+    .success-mark svg {
+      width: 40px;
+      height: 40px;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 2.5;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .success-title {
+      font-family: 'Bree Serif', serif;
+      font-size: 28px;
+      color: var(--text);
+    }
+
+    .success-text {
+      font-size: 15px;
+      color: var(--text-2);
+      max-width: 280px;
+      line-height: 1.5;
     }
   </style>
 </head>
@@ -677,10 +763,11 @@
 <body>
 
   <div id="pinScreen" class="pin-screen">
-    <img class="pin-logo"
-      src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTEUtsd4hVkx2VT8FNzBJzjV7fMZl8O7glf6A&s" alt="SR">
-    <div class="pin-title">Ementa do Dia</div>
-    <div class="pin-sub">Insere o PIN para continuar</div>
+    <img class="pin-logo" src="https://www.churrasqueirasr.pt/assets/img/logo-sr.png"
+      onerror="this.onerror=null;this.src='https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTEUtsd4hVkx2VT8FNzBJzjV7fMZl8O7glf6A&s'"
+      alt="Churrasqueira SR">
+    <div class="pin-title">Ementa do dia</div>
+    <div class="pin-sub">Introduz o PIN para continuar</div>
     <div class="pin-dots" id="pinDots">
       <div class="pin-dot" id="pd0"></div>
       <div class="pin-dot" id="pd1"></div>
@@ -700,26 +787,28 @@
       <div class="pin-btn" onpointerdown="pinPress('9')">9</div>
       <div class="pin-btn empty"></div>
       <div class="pin-btn" onpointerdown="pinPress('0')">0</div>
-      <div class="pin-btn del" onpointerdown="pinDel()">&#9003;</div>
+      <div class="pin-btn del" onpointerdown="pinDel()" aria-label="Apagar"><svg class="i" viewBox="0 0 24 24" style="width:24px;height:24px"><path d="M20 5H9l-7 7 7 7h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2Z"/><path d="m17 9-6 6"/><path d="m11 9 6 6"/></svg></div>
     </div>
   </div>
 
   <div class="header">
     <div class="header-inner">
-      <img class="header-logo"
-        src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTEUtsd4hVkx2VT8FNzBJzjV7fMZl8O7glf6A&s" alt="SR">
-      <div class="header-text">
-        <h1>Churrasqueira SR</h1>
-        <div class="sub">Ementa do Dia</div>
+      <img class="header-logo" src="https://www.churrasqueirasr.pt/assets/img/logo-sr.png"
+        onerror="this.onerror=null;this.src='https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTEUtsd4hVkx2VT8FNzBJzjV7fMZl8O7glf6A&s'"
+        alt="Churrasqueira SR">
+      <div class="header-meta">
+        <div class="header-title">Ementa do dia</div>
+        <div class="header-date" id="dateBadge"></div>
       </div>
     </div>
-    <div class="header-date" id="dateBadge"></div>
   </div>
 
   <div class="content">
 
     <div class="section">
-      <div class="section-label">📍 Local</div>
+      <div class="section-head">
+        <div class="section-label">Local</div>
+      </div>
       <div class="local-grid">
         <div class="local-btn" id="btnI" onpointerdown="selectLocal('Infantado')">
           <span class="lname">Infantado</span>
@@ -731,50 +820,60 @@
     </div>
 
     <div class="section">
-      <div class="section-label">🍲 Sopas <span class="count-badge" id="sopaBadge">0</span></div>
+      <div class="section-head">
+        <div class="section-label">Sopas</div>
+        <span class="count-badge" id="sopaBadge">0</span>
+      </div>
       <div class="search-wrap">
-        <span class="search-icon">🔍</span>
-        <input class="search-input" id="sopaSearch" placeholder="Pesquisar sopa..." oninput="filterSopas(this.value)"
+        <span class="search-icon"><svg class="i" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></span>
+        <input class="search-input" id="sopaSearch" placeholder="Pesquisar sopa" oninput="filterSopas(this.value)"
           autocomplete="off">
       </div>
       <div class="dishes-list" id="sopasList"></div>
       <div class="add-row">
-        <input class="add-input" id="sopaNewInput" placeholder="+ Sopa nova..." autocomplete="off">
-        <button class="add-btn" onclick="addNewSopa()">+</button>
+        <input class="add-input" id="sopaNewInput" placeholder="Adicionar sopa nova" autocomplete="off">
+        <button class="add-btn" onclick="addNewSopa()" aria-label="Adicionar sopa"><svg class="i" viewBox="0 0 24 24"><path d="M12 5v14"/><path d="M5 12h14"/></svg></button>
       </div>
     </div>
 
     <div class="section">
-      <div class="section-label">🍽️ Pratos <span class="count-badge" id="pratosCount">0</span></div>
+      <div class="section-head">
+        <div class="section-label">Pratos</div>
+        <span class="count-badge" id="pratosCount">0</span>
+      </div>
       <div class="search-wrap">
-        <span class="search-icon">🔍</span>
-        <input class="search-input" id="pratosSearch" placeholder="Pesquisar prato..."
+        <span class="search-icon"><svg class="i" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></span>
+        <input class="search-input" id="pratosSearch" placeholder="Pesquisar prato"
           oninput="filterPratos(this.value)" autocomplete="off">
       </div>
       <div class="dishes-list" id="pratosList"></div>
       <div class="add-row">
-        <input class="add-input" id="pratoNewInput" placeholder="+ Prato novo..." autocomplete="off">
-        <button class="add-btn" onclick="addNewPrato()">+</button>
+        <input class="add-input" id="pratoNewInput" placeholder="Adicionar prato novo" autocomplete="off">
+        <button class="add-btn" onclick="addNewPrato()" aria-label="Adicionar prato"><svg class="i" viewBox="0 0 24 24"><path d="M12 5v14"/><path d="M5 12h14"/></svg></button>
       </div>
     </div>
 
     <div class="summary-box" id="summaryBox">
-      <div class="summary-ttl">Resumo da Ementa</div>
+      <div class="summary-ttl">Resumo da ementa</div>
       <div id="summaryContent"></div>
     </div>
 
-    <button class="submit-btn" id="submitBtn" onclick="submitEmenta()" disabled>
-      Publicar Ementa
-      <span class="submit-sub" id="submitSub">Seleciona local + sopa + pelo menos 1 prato</span>
-    </button>
-
   </div>
+
+  <div class="submit-bar">
+    <button class="submit-btn" id="submitBtn" onclick="submitEmenta()" disabled>
+      Publicar ementa
+      <span class="submit-sub" id="submitSub">Escolhe o local, uma sopa e um prato</span>
+    </button>
+  </div>
+
   <div class="toast" id="toast"></div>
 
-  <div class="modal-overlay" id="confirmModal">
+  <div class="modal-overlay" id="confirmModal" onclick="if(event.target===this)closeModal()">
     <div class="modal-box">
+      <div class="modal-title">Publicar agora?</div>
       <div class="modal-text">
-        Vai publicar a ementa de <strong id="modalLocalText">Local</strong> nas redes sociais.
+        A ementa de <strong id="modalLocalText">Local</strong> vai para o Instagram e o Facebook.
       </div>
       <div class="modal-actions">
         <button class="btn-cancel" onclick="closeModal()">Cancelar</button>
@@ -843,6 +942,7 @@
     ];
 
     let state = { local: null, sopas: new Set(), pratos: new Set() };
+    const CHECK = '<svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
 
     // Função mágica que limpa os acentos todos para a pesquisa
     function limpaAcentos(texto) {
@@ -862,8 +962,8 @@
     document.addEventListener('DOMContentLoaded', () => {
       checkPin();
       const d = new Date();
-      document.getElementById('dateBadge').textContent =
-        d.toLocaleDateString('pt-PT', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+      const ds = d.toLocaleDateString('pt-PT', { weekday: 'long', day: 'numeric', month: 'long' });
+      document.getElementById('dateBadge').textContent = ds.charAt(0).toUpperCase() + ds.slice(1);
       renderSopas('');
       renderPratos('');
     });
@@ -902,10 +1002,10 @@
         const isNew = ex.sopas.includes(s);
         const isTopSopa = TOP_SOPAS.includes(s) && !filter;
         return `<div class="dish-item${sel ? ' selected' : ''}" onclick="toggleSopa('${s.replace(/'/g, "\'")}')">
-      <div class="dish-check">${sel ? '✓' : ''}</div>
+      <div class="dish-check">${sel ? CHECK : ''}</div>
       <div class="dish-name">${s}</div>
-      ${isTopSopa ? '<span class="dish-badge">⭐</span>' : ''}
-      ${isNew ? '<span class="dish-badge">Nova</span>' : ''}
+      ${isTopSopa ? '<span class="dish-tag">habitual</span>' : ''}
+      ${isNew ? '<span class="dish-tag">nova</span>' : ''}
     </div>`;
       }).join('');
     }
@@ -915,7 +1015,7 @@
       else if (state.sopas.size >= 2) { showToast('Máximo 2 sopas'); return; }
       else { state.sopas.add(s); }
       const b = document.getElementById('sopaBadge');
-      b.textContent = state.sopas.size;
+      b.textContent = state.sopas.size + ' de 2';
       b.style.display = state.sopas.size > 0 ? 'inline-block' : 'none';
       renderSopas(document.getElementById('sopaSearch').value);
       updateSummary(); updateSubmit();
@@ -926,7 +1026,7 @@
       const f = v[0].toUpperCase() + v.slice(1);
       saveExtra('sopas', f); inp.value = '';
       renderSopas(''); toggleSopa(f);
-      showToast('"' + f + '" guardada!');
+      showToast('"' + f + '" guardada');
     }
 
     function getAllPratos() {
@@ -957,10 +1057,10 @@
         const isTop = TOP_PRATOS.includes(p) && !filter;
         const isNew = ex.pratos.includes(p);
         return `<div class="dish-item${sel ? ' selected' : ''}" onclick="togglePrato('${p.replace(/'/g, "\'")}')">
-      <div class="dish-check">${sel ? '✓' : ''}</div>
+      <div class="dish-check">${sel ? CHECK : ''}</div>
       <div class="dish-name">${p}</div>
-      ${isTop ? '<span class="dish-badge">⭐</span>' : ''}
-      ${isNew ? '<span class="dish-badge">Novo</span>' : ''}
+      ${isTop ? '<span class="dish-tag">habitual</span>' : ''}
+      ${isNew ? '<span class="dish-tag">novo</span>' : ''}
     </div>`;
       }).join('');
     }
@@ -968,7 +1068,7 @@
     function togglePrato(p) {
       state.pratos.has(p) ? state.pratos.delete(p) : state.pratos.add(p);
       const b = document.getElementById('pratosCount');
-      b.textContent = state.pratos.size;
+      b.textContent = state.pratos.size + (state.pratos.size === 1 ? ' escolhido' : ' escolhidos');
       b.style.display = state.pratos.size > 0 ? 'inline-block' : 'none';
       renderPratos(document.getElementById('pratosSearch').value);
       updateSummary(); updateSubmit();
@@ -980,7 +1080,7 @@
       saveExtra('pratos', f); inp.value = '';
       document.getElementById('pratosSearch').value = '';
       renderPratos(''); togglePrato(f);
-      showToast('"' + f + '" guardado!');
+      showToast('"' + f + '" guardado');
     }
 
     function updateSummary() {
@@ -988,15 +1088,18 @@
       const con = document.getElementById('summaryContent');
       if (!state.local && state.sopas.size === 0 && state.pratos.size === 0) { box.classList.remove('visible'); return; }
       box.classList.add('visible');
-      let h = '';
-      if (state.local) h += '<div class="summary-local">📍 ' + state.local + '</div>';
+      let h = '<div class="summary-local">' + (state.local || 'Escolhe o local') + '</div>';
+      h += '<hr class="summary-rule">';
       if (state.sopas.size > 0) {
-        h += '<div class="summary-line">🍲 <strong>Sopas:</strong><br>';
-        h += [...state.sopas].map(s => '&nbsp;&nbsp;· ' + s).join('<br>') + '</div>';
+        h += '<div class="summary-group"><div class="summary-group-ttl">Sopas</div>';
+        h += [...state.sopas].map(s => '<div class="summary-line">' + s + '</div>').join('') + '</div>';
       }
       if (state.pratos.size > 0) {
-        h += '<div class="summary-line" style="margin-top:6px">🍽️ <strong>Pratos (' + state.pratos.size + '):</strong><br>';
-        h += [...state.pratos].map(p => '&nbsp;&nbsp;· ' + p).join('<br>') + '</div>';
+        h += '<div class="summary-group"><div class="summary-group-ttl">Pratos</div>';
+        h += [...state.pratos].map(p => '<div class="summary-line">' + p + '</div>').join('') + '</div>';
+      }
+      if (state.sopas.size === 0 && state.pratos.size === 0) {
+        h += '<div class="summary-empty">Ainda sem sopas nem pratos</div>';
       }
       con.innerHTML = h;
     }
@@ -1008,13 +1111,14 @@
       btn.disabled = !ok;
 
       if (!state.local) {
-        sub.textContent = 'Seleciona o local primeiro';
+        sub.textContent = 'Escolhe o local';
       } else if (state.sopas.size === 0) {
-        sub.textContent = 'Seleciona pelo menos 1 sopa';
+        sub.textContent = 'Escolhe pelo menos uma sopa';
       } else if (state.pratos.size === 0) {
-        sub.textContent = 'Seleciona pelo menos 1 prato';
+        sub.textContent = 'Escolhe pelo menos um prato';
       } else {
-        sub.textContent = state.sopas.size + ' sopas · ' + state.pratos.size + ' pratos — pronto!';
+        const ns = state.sopas.size, np = state.pratos.size;
+        sub.textContent = state.local + ' · ' + ns + (ns === 1 ? ' sopa' : ' sopas') + ' · ' + np + (np === 1 ? ' prato' : ' pratos');
       }
     }
 
@@ -1051,7 +1155,7 @@
         if (!r.ok) throw new Error('HTTP ' + r.status);
         showSuccess();
       } catch (e) {
-        showToast('Erro ao enviar. Tenta novamente.');
+        showToast('Não foi possível enviar. Tenta de novo.');
         btn.disabled = false;
         updateSubmit();
       }
@@ -1059,12 +1163,12 @@
 
     function showSuccess() {
       const overlay = document.createElement('div');
-      overlay.style.cssText = 'position:fixed;inset:0;background:#071a07;z-index:1000;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;padding:32px;animation:fadeIn 0.3s ease';
-
+      overlay.id = 'successOverlay';
+      overlay.className = 'success';
       overlay.innerHTML =
-        '<div style="width:88px;height:88px;border-radius:50%;background:#1E7A44;display:flex;align-items:center;justify-content:center;font-size:44px">✓</div>' +
-        '<div style="font-family:Oswald,sans-serif;font-size:26px;color:#fff;font-weight:600;text-align:center">Ementa Enviada!</div>' +
-        '<div style="font-size:12px;color:rgba(255,255,255,0.45);text-align:center">A ementa está a ser processada e enviada para as redes.</div>';
+        '<div class="success-mark"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div>' +
+        '<div class="success-title">Ementa enviada</div>' +
+        '<div class="success-text">Vai sair no Instagram e no Facebook dentro de momentos.</div>';
 
       document.body.appendChild(overlay);
 
@@ -1085,7 +1189,7 @@
       document.getElementById('pratosSearch').value = '';
       renderSopas(''); renderPratos('');
       updateSubmit();
-      document.querySelector('[style*="071a07"]')?.remove();
+      document.getElementById('successOverlay')?.remove();
     }
 
     function showToast(msg) {
@@ -1135,7 +1239,7 @@
         pinDigitos = ''; // Limpa os pontinhos em background
         updatePinDots();
       } else {
-        document.getElementById('pinErro').textContent = 'PIN incorrecto. Tenta novamente.';
+        document.getElementById('pinErro').textContent = 'PIN incorreto. Tenta de novo.';
         const dots = document.getElementById('pinDots');
 
         // Truque de mestre: forçar o CSS a reiniciar a animação
