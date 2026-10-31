@@ -1,0 +1,18 @@
+[build]
+  publish = "app"
+  functions = "netlify/functions"
+
+# A app é uma página só: sem cache agressiva no HTML, para as atualizações chegarem logo aos telemóveis
+[[headers]]
+  for = "/*.html"
+  [headers.values]
+    Cache-Control = "no-cache"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "same-origin"
+
+[[headers]]
+  for = "/"
+  [headers.values]
+    Cache-Control = "no-cache"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "same-origin"

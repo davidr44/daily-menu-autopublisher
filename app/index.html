@@ -336,8 +336,7 @@
 <body>
 
   <div id="pinScreen" class="pin-screen">
-    <img class="pin-logo" src="https://www.churrasqueirasr.pt/assets/img/logo-sr.png"
-      onerror="this.onerror=null;this.src='https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTEUtsd4hVkx2VT8FNzBJzjV7fMZl8O7glf6A&s'"
+    <img class="pin-logo" src="logo-sr.png"
       alt="Churrasqueira SR">
     <div class="pin-title">Ementa do dia</div>
     <div class="pin-sub">Introduz o PIN para continuar</div>
@@ -364,8 +363,7 @@
 
   <div class="wrap">
     <div class="top">
-      <img class="top-logo" src="https://www.churrasqueirasr.pt/assets/img/logo-sr.png"
-        onerror="this.onerror=null;this.src='https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTEUtsd4hVkx2VT8FNzBJzjV7fMZl8O7glf6A&s'"
+      <img class="top-logo" src="logo-sr.png"
         alt="Churrasqueira SR">
       <button class="pill placeholder" id="localPill" onclick="abrirMenuLocal(event)" aria-label="Mudar local" aria-haspopup="true"><span id="localPillTxt"></span><svg class="i" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></button>
       <div class="loc-menu" id="locMenu" role="menu">
@@ -455,7 +453,8 @@
   <div class="toast" id="toast"></div>
 
   <script>
-    const WEBHOOK = '<removed from history: Make webhook URL>';
+    // A app não guarda segredos: o PIN é confirmado e a ementa enviada através das funções do Netlify
+    const API = '/api';
 
     const SOPAS = [
       "Canja", "Juliana", "Creme de legumes", "Alho francês", "Portuguesa",
@@ -941,15 +940,17 @@
       enviando = true; updateMain();
       document.getElementById('btnBack').hidden = true;
       try {
-        const r = await fetch(WEBHOOK, {
+        const r = await fetch(API + '/publicar', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
+            pin: pinSessao,
             local: state.local,
             sopas: [...state.sopas],
             pratos: [...state.pratos]
           })
         });
+        if (r.status === 401) { enviando = false; updateMain(); voltarAoPin(); return; }
         if (!r.ok) throw new Error('HTTP ' + r.status);
         limparRascunho();
         enviando = false;
@@ -998,6 +999,7 @@
 
     document.addEventListener('DOMContentLoaded', () => {
       checkPin();
+      fetch(API + '/pin').catch(() => { });   // acorda a função enquanto a pessoa mete o PIN
       aRepor = true;   // não apagar o rascunho antes de o ler
       document.getElementById('dateLine').textContent = hoje();
       renderTiles('sopas'); renderTiles('pratos');
@@ -1007,18 +1009,18 @@
     });
 
     // ── PIN ──────────────────────────────────────────────
-    const PINS_VALIDOS = ['<removed from history>']; // ← define aqui os 3 PINs
-    const PIN_MINUTOS = 10;
-    const PIN_KEY = 'sr_pin_oficial'; // ← A chave nova para obrigar a aparecer agora
+    const PIN_KEY_ANTIGA = 'sr_pin_oficial';   // versões antigas guardavam aqui a hora do PIN
+    let pinSessao = null;      // só em memória, enquanto a app está aberta
+    let aVerificar = false;
     let pinDigitos = '';
 
     // O PIN é pedido sempre que a app abre (nada fica guardado no telemóvel)
     function checkPin() {
-      try { localStorage.removeItem(PIN_KEY); } catch (e) { }
+      try { localStorage.removeItem(PIN_KEY_ANTIGA); } catch (e) { }
     }
 
     function pinPress(d) {
-      if (pinDigitos.length >= 4) return;
+      if (aVerificar || pinDigitos.length >= 4) return;
       pinDigitos += d;
       updatePinDots();
       if (pinDigitos.length === 4) setTimeout(checkPinCode, 80);
@@ -1050,23 +1052,48 @@
       el.addEventListener('mousedown', e => { e.preventDefault(); carregar(); });
     });
 
-    function checkPinCode() {
-      if (PINS_VALIDOS.includes(pinDigitos)) {
+    async function checkPinCode() {
+      aVerificar = true;
+      const tentativa = pinDigitos;
+      let resposta = 'erro';
+      try {
+        const r = await fetch(API + '/pin', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ pin: tentativa })
+        });
+        resposta = r.ok ? 'certo' : (r.status === 401 ? 'errado' : 'erro');
+      } catch (e) { }
+      aVerificar = false;
+
+      if (resposta === 'certo') {
+        pinSessao = tentativa;
         document.getElementById('pinScreen').classList.add('hidden');
         pinDigitos = '';
         updatePinDots();
-      } else {
-        document.getElementById('pinErro').textContent = 'PIN incorreto. Tenta de novo.';
-        const dots = document.getElementById('pinDots');
-        dots.style.animation = 'none';
-        void dots.offsetWidth;
-        dots.style.animation = 'shake 0.4s ease';
-        setTimeout(() => {
-          pinDigitos = '';
-          updatePinDots();
-          document.getElementById('pinErro').textContent = '';
-        }, 700);
+        return;
       }
+      document.getElementById('pinErro').textContent =
+        resposta === 'errado' ? 'PIN incorreto. Tenta de novo.' : 'Sem ligação. Verifica a internet e tenta de novo.';
+      const dots = document.getElementById('pinDots');
+      dots.style.animation = 'none';
+      void dots.offsetWidth;
+      dots.style.animation = 'shake 0.4s ease';
+      setTimeout(() => {
+        pinDigitos = '';
+        updatePinDots();
+        document.getElementById('pinErro').textContent = '';
+      }, 900);
+    }
+
+    // Se o servidor deixar de aceitar o PIN (por exemplo, foi mudado), pede-o outra vez
+    function voltarAoPin() {
+      fecharLista();
+      pinSessao = null;
+      pinDigitos = '';
+      updatePinDots();
+      document.getElementById('pinScreen').classList.remove('hidden');
+      document.getElementById('pinErro').textContent = 'Volta a introduzir o PIN.';
     }
 
     document.addEventListener('keydown', e => {

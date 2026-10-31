@@ -1,0 +1,16 @@
+{
+  "name": "ementa-sr",
+  "private": true,
+  "type": "module",
+  "description": "App da equipa para publicar a ementa do dia (Churrasqueira SR) e as funções que a ligam ao Make.",
+  "scripts": {
+    "test": "npm run test:unit && npm run test:e2e",
+    "test:unit": "node --test tests/unit/*.test.mjs",
+    "test:e2e": "playwright test",
+    "dev": "node tests/server.mjs"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.63.0"
+  },
+  "engines": { "node": ">=20" }
+}
