@@ -35,6 +35,10 @@
     * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
     html { touch-action: manipulation; } /* sem zoom de duplo toque, sem atrasar toques rápidos */
 
+    /* Sem o "elástico" do Safari: o ecrã não estica para cima e para baixo como uma página web */
+    html, body { overscroll-behavior: none; }
+    /* Passos 1 e 4: se o conteúdo cabe no ecrã, o ecrã fica parado */
+    html.parado, html.parado body { overflow: hidden; height: 100%; }
     body {
       font-family: 'Bricolage Grotesque', system-ui, sans-serif;
       font-size: 16px;
@@ -597,8 +601,24 @@
       if (n === 4) renderReceipt();
       updateMain();
       window.scrollTo(0, 0);
+      fixarSeCouber();
       guardarRascunho();
     }
+
+    // Nos passos 1 e 4, se tudo cabe no ecrã, não há nada para deslizar
+    function fixarSeCouber() {
+      const html = document.documentElement;
+      html.classList.remove('parado');
+      if (current !== 1 && current !== 4) return;
+      requestAnimationFrame(() => {
+        const ativo = document.querySelector('.step.active');
+        if (!ativo) return;
+        const fundo = ativo.getBoundingClientRect().bottom + window.scrollY;
+        const espacoBotao = document.querySelector('.foot').offsetHeight;
+        if (fundo + espacoBotao <= window.innerHeight) html.classList.add('parado');
+      });
+    }
+    window.addEventListener('resize', fixarSeCouber);
 
     // ── Rascunho: se a app fechar a meio, ao voltar (até 15 minutos depois) está tudo como ficou ──
     const RASCUNHO_KEY = 'sr_rascunho';
