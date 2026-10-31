@@ -2,7 +2,7 @@
   publish = "app"
   functions = "netlify/functions"
 
-# A app é uma página só: sem cache agressiva no HTML, para as atualizações chegarem logo aos telemóveis
+# Single-page app: no aggressive HTML caching, so updates reach staff phones right away
 [[headers]]
   for = "/*.html"
   [headers.values]

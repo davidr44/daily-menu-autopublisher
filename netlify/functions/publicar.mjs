@@ -1,32 +1,29 @@
-import { pinCorreto, validarEmenta, json, lerJson } from './_lib.mjs';
+import { isValidPin, validateMenu, json, readJson } from './_lib.mjs';
 
 // POST /api/publicar → { pin, local, sopas, pratos }
-// Confirma o PIN, valida a ementa e só então a envia para o Make (mesmo formato de sempre).
+// Checks the PIN, validates the menu and only then forwards it to Make (same payload as before).
 export default async (req) => {
   if (req.method !== 'POST') return json({ ok: false }, 405);
 
-  const body = await lerJson(req);
-  if (!pinCorreto(body?.pin)) return json({ ok: false, erro: 'pin' }, 401);
+  const body = await readJson(req);
+  if (!isValidPin(body?.pin)) return json({ ok: false, error: 'pin' }, 401);
 
-  const ementa = validarEmenta(body);
-  if (!ementa) return json({ ok: false, erro: 'ementa' }, 400);
+  const menu = validateMenu(body);
+  if (!menu) return json({ ok: false, error: 'invalid_menu' }, 400);
 
-  const destino = process.env.MAKE_WEBHOOK_URL;
-  if (!destino) return json({ ok: false, erro: 'configuracao' }, 500);
+  const target = process.env.MAKE_WEBHOOK_URL;
+  if (!target) return json({ ok: false, error: 'not_configured' }, 500);
+
+  const headers = { 'content-type': 'application/json' };
+  // The Make webhook rejects requests without this key, so the URL alone is useless
+  if (process.env.MAKE_API_KEY) headers['x-make-apikey'] = process.env.MAKE_API_KEY;
 
   try {
-    const headers = { 'content-type': 'application/json' };
-    // O webhook do Make só aceita pedidos com esta chave; sem ela, o endereço sozinho não serve de nada
-    if (process.env.MAKE_API_KEY) headers['x-make-apikey'] = process.env.MAKE_API_KEY;
-    const r = await fetch(destino, {
-      method: 'POST',
-      headers,
-      body: JSON.stringify(ementa),
-    });
-    if (!r.ok) return json({ ok: false, erro: 'make' }, 502);
+    const r = await fetch(target, { method: 'POST', headers, body: JSON.stringify(menu) });
+    if (!r.ok) return json({ ok: false, error: 'make' }, 502);
     return json({ ok: true });
   } catch {
-    return json({ ok: false, erro: 'make' }, 502);
+    return json({ ok: false, error: 'make' }, 502);
   }
 };
 

@@ -7,7 +7,7 @@
   <meta name="theme-color" content="#F3F3F1">
   <meta name="color-scheme" content="light only">
   <title>Ementa SR</title>
-  <!-- App no ecrã principal: ícone, nome e ecrã inteiro -->
+  <!-- Home-screen app: icon, name and full screen -->
   <link rel="apple-touch-icon" href="icon-180.png">
   <link rel="manifest" href="manifest.webmanifest">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -19,7 +19,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&display=swap" rel="stylesheet">
   <style>
     :root {
-      color-scheme: light only;   /* a app fica sempre clara, mesmo com o iPhone em modo escuro */
+      color-scheme: light only;   /* always light, even when the iPhone is in dark mode */
       --bg: #F3F3F1;
       --card: #FFFFFF;
       --ink: #17181A;
@@ -33,11 +33,11 @@
     }
 
     * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-    html { touch-action: manipulation; } /* sem zoom de duplo toque, sem atrasar toques rápidos */
+    html { touch-action: manipulation; } /* no double-tap zoom, no delay on quick taps */
 
-    /* Sem o "elástico" do Safari: o ecrã não estica para cima e para baixo como uma página web */
+    /* No Safari rubber-band: the screen does not stretch like a web page */
     html, body { overscroll-behavior: none; }
-    /* Passos 1 e 4: se o conteúdo cabe no ecrã, o ecrã fica parado */
+    /* Steps 1 and 4: if everything fits, the screen does not scroll */
     html.parado, html.parado body { overflow: hidden; height: 100%; }
     body {
       font-family: 'Bricolage Grotesque', system-ui, sans-serif;
@@ -58,7 +58,7 @@
 
     .wrap { max-width: 480px; margin: 0 auto; padding: 24px 20px calc(120px + env(safe-area-inset-bottom)); }
 
-    /* ── Topo ── */
+    /* ── Header ── */
     .top { position: relative; display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 56px; }
     .top-logo { height: 48px; width: auto; display: block; mix-blend-mode: multiply; }
     .pill {
@@ -86,7 +86,7 @@
     .progress i::after { content: ""; position: absolute; inset: 0; background: var(--red); transform: scaleX(0); transform-origin: left; transition: transform .25s var(--ease); }
     .progress i.on::after { transform: scaleX(1); }
 
-    /* ── Passos ── */
+    /* ── Steps ── */
     .step { display: none; }
     .step.active { display: block; animation: stepIn .28s var(--ease); }
     .step.active.back { animation-name: stepBack; }
@@ -97,7 +97,7 @@
     h1 { font-size: 36px; line-height: 1.04; font-weight: 800; letter-spacing: -0.02em; }
     .sub { font-size: 16px; color: var(--ink-2); margin: 8px 0 24px; min-height: 22px; }
 
-    /* Local */
+    /* Location */
     .locais { display: grid; gap: 12px; }
     .local {
       display: flex; align-items: center; justify-content: space-between;
@@ -111,7 +111,7 @@
     .local.on { background: var(--red-tint); border: 1.5px solid var(--red); color: var(--red); }
     .local.on .i { color: var(--red); }
 
-    /* Botões de pratos */
+    /* Dish buttons */
     .tiles { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
     @keyframes pop { from { transform: scale(0.4); } to { transform: scale(1); } }
     .tile {
@@ -129,7 +129,7 @@
     @keyframes sair { from { transform: scale(0.96); background-color: var(--red); color: #fff; border-color: var(--red); } to { transform: none; } }
     .tile.on { background: var(--red); border-color: var(--red); color: #fff; box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18), 0 4px 12px rgba(200, 38, 26, 0.20); }
 
-    /* Pesquisa */
+    /* Search */
     .search {
       display: flex; align-items: center; gap: 10px; margin-bottom: 12px;
       background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 0 14px;
@@ -143,7 +143,7 @@
 
     .results { margin: -4px 0 12px; background: var(--card); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }
     .results:empty { display: none; }
-    /* Entrada da pesquisa */
+    /* Search entry point */
     .sticky { position: sticky; top: 0; z-index: 20; background: var(--bg); padding: 8px 0 12px; margin: -8px 0 4px; }
     .search-btn {
       display: flex; align-items: center; gap: 12px; width: 100%;
@@ -154,15 +154,15 @@
     .search-btn:active { transform: scale(0.99); }
     .search-btn .i { width: 22px; height: 22px; }
 
-    /* Lista completa (ecrã por cima) */
-    /* Sem deslizar de baixo: no iPhone, focar uma caixa fora do ecrã fazia a página saltar */
+    /* Full list (overlay screen) */
+    /* No slide-in from below: on iPhone, focusing an off-screen input made the page jump */
     .picker {
       position: fixed; top: 0; left: 0; right: 0; height: 100%; z-index: 1500; background: var(--bg);
       opacity: 0; visibility: hidden;
       transition: opacity .18s var(--ease), visibility 0s linear .18s;
     }
     .picker.show { opacity: 1; visibility: visible; transition: opacity .18s var(--ease); }
-    /* Se o iPhone deslocar o ecrã com o teclado aberto, à volta da lista só se vê o fundo */
+    /* If iOS pans the viewport with the keyboard open, only the background shows around the list */
     .picker { box-shadow: 0 0 0 100vmax var(--bg); }
     body.lista-aberta .wrap, body.lista-aberta .foot { visibility: hidden; }
     .pk-head, .picker .search, .pk-foot { touch-action: none; }
@@ -178,7 +178,7 @@
     }
     .pk-foot { margin-top: auto; padding: 12px 0 calc(16px + env(safe-area-inset-bottom)); }
     .pk-foot .btn-main { width: 100%; }
-    /* Enquanto se escreve, o teclado já ocupa o fundo: o "Feito" sai do caminho */
+    /* While typing, the keyboard covers the bottom, so the Done button steps aside */
     .picker.typing .pk-foot { display: none; }
     .picker.typing .pk-list { margin-bottom: 8px; }
     .res .tag { color: inherit; }
@@ -209,7 +209,7 @@
     .res .tag { font-size: 13px; color: var(--red); font-weight: 600; white-space: nowrap; }
     .res.add { color: var(--red); font-weight: 600; justify-content: flex-start; }
 
-    /* Talão */
+    /* Receipt */
     .receipt {
       position: relative; background: var(--card); padding: 28px 24px 24px; margin: 0 4px;
       box-shadow: 0 1px 2px rgba(23, 24, 26, 0.06), 0 8px 24px rgba(23, 24, 26, 0.07);
@@ -227,7 +227,7 @@
     .r-line { font-size: 16px; line-height: 1.6; color: var(--ink-2); }
     .r-note { text-align: center; font-size: 14px; color: var(--ink-2); margin-top: 16px; }
 
-    /* Rodapé fixo */
+    /* Fixed footer */
     .foot {
       position: fixed; left: 0; right: 0; bottom: 0; z-index: 50;
       background: linear-gradient(to top, var(--bg) 72%, rgba(243, 243, 241, 0));
@@ -251,7 +251,7 @@
       outline: 2px solid var(--ink); outline-offset: 2px;
     }
 
-    /* Confirmação */
+    /* Confirmation */
     .sheet-bg {
       position: fixed; inset: 0; z-index: 2000; background: rgba(23, 24, 26, 0.45);
       display: flex; align-items: flex-end; justify-content: center;
@@ -281,7 +281,7 @@
     }
     .toast.show { transform: translate(-50%, 0); opacity: 1; }
 
-    /* Enviada */
+    /* Sent screen */
     .success {
       position: fixed; inset: 0; z-index: 1000; background: var(--bg);
       display: flex; flex-direction: column; align-items: center; justify-content: center;
@@ -374,7 +374,7 @@
 
     <div class="progress" id="progress"><i></i><i></i><i></i><i></i></div>
 
-    <!-- 1. Local -->
+    <!-- 1. Location -->
     <section class="step" data-step="1">
       <div class="step-n">Passo 1 de 4</div>
       <h1>De onde é a ementa?</h1>
@@ -385,7 +385,7 @@
       </div>
     </section>
 
-    <!-- 2. Sopas -->
+    <!-- 2. Soups -->
     <section class="step" data-step="2">
       <div class="step-n">Passo 2 de 4</div>
       <h1>Que sopas há hoje?</h1>
@@ -396,7 +396,7 @@
       <div class="tiles" id="sopasTiles"></div>
     </section>
 
-    <!-- 3. Pratos -->
+    <!-- 3. Dishes -->
     <section class="step" data-step="3">
       <div class="step-n">Passo 3 de 4</div>
       <h1>Que pratos há hoje?</h1>
@@ -407,7 +407,7 @@
       <div class="tiles" id="pratosTiles"></div>
     </section>
 
-    <!-- 4. Confirmar -->
+    <!-- 4. Review -->
     <section class="step" data-step="4">
       <div class="step-n">Passo 4 de 4</div>
       <h1>Está tudo certo?</h1>
@@ -453,7 +453,7 @@
   <div class="toast" id="toast"></div>
 
   <script>
-    // A app não guarda segredos: o PIN é confirmado e a ementa enviada através das funções do Netlify
+    // The app holds no secrets: the PIN is checked and the menu is sent through the Netlify Functions
     const API = '/api';
 
     const SOPAS = [
@@ -511,7 +511,7 @@
       "Bacalhau lascado", "Escalope de vitela Mirandesa", "Polvo no forno", "Arroz de polvo"
     ];
 
-    // Botões fixos: os 30 pratos que mais saíram nas ementas de nov/2025 a mar/2026, do mais para o menos frequente
+    // Fixed buttons: the 30 most frequent dishes in the menus from Nov 2025 to Mar 2026, most frequent first
     const BOTOES_PRATOS = [
       "Bacalhau com natas",
       "Frango à Brás",
@@ -544,7 +544,7 @@
       "Lulas recheadas com puré",
       "Cabrito assado no forno"
     ];
-    // Sopas pela mesma ordem de frequência (a Canja vem sempre)
+    // Soups in order of frequency (Canja is on the menu every day)
     const ORDEM_SOPAS = ["Canja", "Juliana", "Portuguesa", "Alho francês", "Feijão verde", "Creme de legumes", "Espinafres", "Agrião", "Espinafres com feijão branco", "Nabiça", "Espinafres com grão", "Creme de cenoura", "Nabiça com grão", "Lavrador", "Peixe", "Lombardo com feijão", "Couve à portuguesa com feijão catarino", "Alho francês com grão", "Primavera", "Feijão", "Nabiça com feijão branco", "Caldo verde", "Couve galega c/feijão branco"];
     const SOPA_FIXA = 'Canja';
     let state = { local: null, sopas: new Set([SOPA_FIXA]), pratos: new Set() };
@@ -585,7 +585,7 @@
       return ds.charAt(0).toUpperCase() + ds.slice(1);
     }
 
-    // ── Navegação ──
+    // ── Navigation ──
     function goStep(n) {
       if (n < 1 || n > 4) return;
       const back = n < current;
@@ -604,7 +604,7 @@
       guardarRascunho();
     }
 
-    // Nos passos 1 e 4, se tudo cabe no ecrã, não há nada para deslizar
+    // On steps 1 and 4, if everything fits on screen, there is nothing to scroll
     function fixarSeCouber() {
       const html = document.documentElement;
       html.classList.remove('parado');
@@ -619,11 +619,11 @@
     }
     window.addEventListener('resize', fixarSeCouber);
 
-    // ── Rascunho: se a app fechar a meio, ao voltar (até 15 minutos depois) está tudo como ficou ──
+    // ── Draft: if the app closes mid-way, reopening within 15 minutes restores everything ──
     const RASCUNHO_KEY = 'sr_rascunho';
     const RASCUNHO_MINUTOS = 15;
     let aRepor = false;
-    let rascunhoReposto = false;   // o aviso só aparece depois do PIN
+    let rascunhoReposto = false;   // shown only after the PIN
     function diaDeHoje() {
       const d = new Date();
       return d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate();
@@ -680,7 +680,7 @@
       if (current === 4) { b.disabled = false; b.textContent = 'Publicar ementa'; }
     }
 
-    // ── Local ──
+    // ── Location ──
     function selectLocal(l) {
       mudarLocal(l);
     }
@@ -700,7 +700,7 @@
     });
     document.addEventListener('click', fecharMenuLocal);
 
-    // Muda o local sem sair do passo atual nem perder o que já foi escolhido
+    // Change location without leaving the current step or losing selections
     function mudarLocal(l) {
       state.local = l;
       document.getElementById('btnI').classList.toggle('on', l === 'Infantado');
@@ -712,7 +712,7 @@
       guardarRascunho();
     }
 
-    // ── Sopas e pratos ──
+    // ── Soups and dishes ──
     function renderTiles(type) {
       const sel = state[type];
       const top = getTop(type);
@@ -727,7 +727,7 @@
       else sub.textContent = n === 0 ? 'Escolhe todos os que houver.' : (n === 1 ? '1 prato escolhido.' : n + ' pratos escolhidos.');
     }
 
-    // ── Lista completa com pesquisa ──
+    // ── Full list with search ──
     let pkType = null;
     function abrirLista(type, comTeclado) {
       pkType = type;
@@ -753,22 +753,22 @@
       if (estavaAberta) soltarFundo();
     }
 
-    // Com o ecrã da lista aberto, a página de trás não mexe
+    // While the list screen is open, the page behind stays locked
     let scrollGuardado = 0;
-    // Dentro do ecrã da lista só a lista desliza. Arrastar no título, na pesquisa ou no botão
-    // (ou além do fim da lista) não mexe em mais nada.
+    // Inside the list screen only the list scrolls. Dragging on the title, the search box or
+    // the button (or past the end of the list) moves nothing else.
     (function () {
       const pk = document.getElementById('picker');
       const lista = document.getElementById('pkList');
-      // Bug conhecido do Safari no iPhone: se a lista está mesmo no topo (ou no fim), o 1.º deslize
-      // vai para a página de trás (que está presa) e parece tudo travado. Afastar a lista 1px do
-      // limite antes de cada toque garante que o deslize fica sempre na lista.
-      // Como nas apps do iPhone (Contactos, WhatsApp): mexer na lista fecha o teclado.
-      // Com o teclado aberto, o Safari desloca o ecrã inteiro em vez de deslizar a lista;
-      // sem teclado, a lista desliza sempre e nada mais mexe.
+      // Known iOS Safari issue: when the list sits exactly at its top (or bottom), the first swipe
+      // is handed to the (locked) page and everything feels frozen. Nudging the list 1px away
+      // from the edge before each touch keeps the swipe on the list.
+      // Like native iOS lists (Contacts, WhatsApp): touching the list dismisses the keyboard.
+      // With the keyboard up, Safari pans the whole viewport instead of scrolling the list;
+      // without it, the list always scrolls and nothing else moves.
       const inp = document.getElementById('pkSearch');
-      // No deslize que fecha o teclado, o Safari não desliza a lista sozinho:
-      // nesse deslize a app move a lista ela própria, a acompanhar o dedo.
+      // On the swipe that dismisses the keyboard Safari does not scroll the list,
+      // so the app scrolls it itself, following the finger.
       let manual = false, yIni = 0, topoIni = 0;
       lista.addEventListener('touchstart', e => {
         manual = document.activeElement === inp;
@@ -803,7 +803,7 @@
       window.scrollTo(0, scrollGuardado);
     }
 
-    // O ecrã da lista ocupa só a parte visível acima do teclado (iPhone e Android)
+    // The list screen fills only the visible area above the keyboard (iOS and Android)
     function ajustarPicker() {
       const pk = document.getElementById('picker');
       const vv = window.visualViewport;
@@ -816,7 +816,7 @@
     pkInput.addEventListener('blur', () => {
       const pk = document.getElementById('picker');
       pk.classList.remove('typing');
-      // o teclado está a fechar: volta já à altura toda, sem esperar pelo Safari
+      // keyboard is closing: go back to full height now instead of waiting for Safari
       pk.style.height = ''; pk.style.top = '';
     });
 
@@ -871,7 +871,7 @@
     document.getElementById('pkList').addEventListener('click', e => {
       const r = e.target.closest('.all-row'); if (!r || !pkType) return;
       const type = pkType;
-      // ✕ num prato adicionado: 1.º toque pergunta, 2.º toque apaga
+      // ✕ on a dish added by staff: first tap asks, second tap deletes
       const d = e.target.closest('.del');
       if (d) {
         if (!d.classList.contains('armado')) {
@@ -922,7 +922,7 @@
       });
     });
 
-    // ── Talão ──
+    // ── Receipt ──
     function renderReceipt() {
       const g = (t, set) => '<div class="r-group"><div class="r-group-ttl">' + t + '</div>' +
         [...set].map(x => '<div class="r-line">' + esc(x) + '</div>').join('') + '</div>';
@@ -933,7 +933,7 @@
         '<hr class="r-rule">' + g('Sopas', state.sopas) + g('Pratos', state.pratos);
     }
 
-    // ── Publicar ──
+    // ── Publish ──
     async function publicar() {
       if (enviando) return;
       fecharConfirmacao();
@@ -968,7 +968,7 @@
       o.id = 'successOverlay';
       o.className = 'success';
       const hora = new Date().toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' });
-      // o mesmo talão do passo 4, agora carimbado
+      // the same receipt as step 4, now stamped
       o.innerHTML =
         '<div class="receipt">' + document.getElementById('receipt').innerHTML +
         '<div class="stamp" role="img" aria-label="Enviada às ' + hora + '">ENVIADA<small>' + hora + '</small></div></div>' +
@@ -999,8 +999,8 @@
 
     document.addEventListener('DOMContentLoaded', () => {
       checkPin();
-      fetch(API + '/pin').catch(() => { });   // acorda a função enquanto a pessoa mete o PIN
-      aRepor = true;   // não apagar o rascunho antes de o ler
+      fetch(API + '/pin').catch(() => { });   // wake the function while the PIN is being typed
+      aRepor = true;   // do not overwrite the draft before reading it
       document.getElementById('dateLine').textContent = hoje();
       renderTiles('sopas'); renderTiles('pratos');
       goStep(1);
@@ -1009,12 +1009,12 @@
     });
 
     // ── PIN ──────────────────────────────────────────────
-    const PIN_KEY_ANTIGA = 'sr_pin_oficial';   // versões antigas guardavam aqui a hora do PIN
-    let pinSessao = null;      // só em memória, enquanto a app está aberta
+    const PIN_KEY_ANTIGA = 'sr_pin_oficial';   // older versions stored the PIN time here
+    let pinSessao = null;      // memory only, while the app is open
     let aVerificar = false;
     let pinDigitos = '';
 
-    // O PIN é pedido sempre que a app abre (nada fica guardado no telemóvel)
+    // The PIN is asked every time the app opens (nothing is stored on the phone)
     function checkPin() {
       try { localStorage.removeItem(PIN_KEY_ANTIGA); } catch (e) { }
     }
@@ -1038,8 +1038,8 @@
       }
     }
 
-    // Teclas do PIN: reagem ao encostar o dedo (sem espera). Cancelar o toque aqui impede que o
-    // iPhone o "repita" no que fica por baixo quando o ecrã do PIN desaparece.
+    // PIN keys react on touch-down (no delay). Cancelling the touch here stops iOS from
+    // replaying it as a click on whatever is underneath once the PIN screen disappears.
     document.querySelectorAll('.pin-btn[data-k]').forEach(el => {
       const carregar = () => { el.dataset.k === 'del' ? pinDel() : pinPress(el.dataset.k); };
       el.addEventListener('touchstart', e => {
@@ -1086,7 +1086,7 @@
       }, 900);
     }
 
-    // Se o servidor deixar de aceitar o PIN (por exemplo, foi mudado), pede-o outra vez
+    // If the server stops accepting the PIN (for example, it was changed), ask for it again
     function voltarAoPin() {
       fecharLista();
       pinSessao = null;
@@ -1110,7 +1110,7 @@
       if (first) first.click();
     });
 
-    // Bloqueia zoom com duplo toque e com dois dedos (iOS)
+    // Block double-tap and pinch zoom (iOS)
     document.addEventListener('gesturestart', e => e.preventDefault());
     document.body.addEventListener('touchmove', function (event) {
       const pinVisible = !document.getElementById('pinScreen').classList.contains('hidden');

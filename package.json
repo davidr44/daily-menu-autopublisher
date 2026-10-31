@@ -1,8 +1,8 @@
 {
-  "name": "ementa-sr",
+  "name": "daily-menu-autopublisher",
   "private": true,
   "type": "module",
-  "description": "App da equipa para publicar a ementa do dia (Churrasqueira SR) e as funções que a ligam ao Make.",
+  "description": "Staff app that publishes the daily menu (Churrasqueira SR) and the serverless functions that connect it to Make.",
   "scripts": {
     "test": "npm run test:unit && npm run test:e2e",
     "test:unit": "node --test tests/unit/*.test.mjs",

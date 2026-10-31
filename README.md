@@ -1,8 +1,12 @@
 # Daily Menu → Social Stories
 
+[![Tests](https://github.com/davidr44/daily-menu-autopublisher/actions/workflows/tests.yml/badge.svg)](https://github.com/davidr44/daily-menu-autopublisher/actions/workflows/tests.yml)
+
 **A production automation that turns a takeaway's daily menu into branded Instagram and Facebook Stories, published in under a minute from a staff member's phone.**
 
 > The system is live and used every day by **Churrasqueira SR**, a family-run takeaway with two locations. This repository holds the **staff app and its serverless API** (code, tests, CI) and a **case study** of the automation behind it. The orchestration and the Story design template stay private; this page explains what they do and why each decision was made.
+
+**Stack:** Make · Meta Graph API · HTML/CSS-to-image rendering · image CDN · Telegram Bot API · Netlify (hosting + Functions) · vanilla HTML/CSS/JS · Playwright · GitHub Actions
 
 ---
 
@@ -35,6 +39,8 @@ The goal: **the people who know the menu tap a few options, and a brand-consiste
 4. **It publishes the Story** to the brand's Facebook Page and Instagram account.
 5. **A Telegram message confirms it** with the location, the time and the platforms. If a stage fails, the pipeline quietly retries it. If it still fails, one message says what broke and includes the menu text and the image, so the Story can be posted by hand in seconds.
 6. **At 11:00 on opening days, a watchdog checks** that every location has published. If one hasn't, it sends a one-line reminder.
+
+<p align="center"><img src="assets/app-demo.gif" alt="Publishing a menu in the staff app (test data)" width="300"></p>
 
 ![Staff app: location, soups, dishes, stamped receipt](assets/03-staff-app.png)
 
@@ -127,7 +133,7 @@ In October 2026 I rebuilt the app around that idea (the full history is in the c
 - **Small things that prevent bad days.** A draft survives the app closing mid-way (15 minutes), dishes added by mistake can be deleted, and the end screen is the same receipt with a timestamped "sent" stamp, so staff see exactly what went out.
 
 ### 11. No secrets in the browser
-The first version checked the PIN in the page and posted straight to the Make webhook. The current version ships no secrets: two Netlify Functions check the PIN, validate the menu (known location, 1–2 soups, sensible lengths) and only then forward `{local, sopas, pratos}` to Make. PINs, the webhook URL and the webhook's API key live in environment variables, and the Make webhook rejects any request without that key, so knowing the URL alone is not enough.
+The first version checked the PIN in the page and posted straight to the Make webhook. That was a deliberate shortcut for a tool with a very small audience: the link was shared only with two staff members, one per location, and every publication sends a Telegram message, so misuse would have been visible within seconds and the realistic worst case was unwanted Stories, not data loss. When I prepared the code to be public, that shortcut was no longer acceptable. The current version ships no secrets: two Netlify Functions check the PIN, validate the menu (known location, 1–2 soups, sensible lengths) and only then forward `{local, sopas, pratos}` to Make. PINs, the webhook URL and the webhook's API key live in environment variables, and the Make webhook rejects any request without that key, so knowing the URL alone is not enough.
 
 ---
 
@@ -161,6 +167,12 @@ Then I tried to publish that same ready container with the ID written in by hand
 - Confirm a hypothesis with direct evidence *before* changing production.
 - Keep a diagnostic harness that can test the third-party API independently of the main pipeline.
 - Treat third-party APIs as unreliable by default, and make the failure path end in something a person can act on.
+
+---
+
+## How I built it
+
+I own the whole system: the process change with the staff, the Make scenario, the Story template and this app. For the October work (the retries, fallbacks and watchdog in the scenario, and the rebuild of this app) I worked with Claude (Anthropic) as a pair programmer, which is why those commits are co-authored. The product decisions were mine: which flow to keep, which buttons to show and why, what to cut, and when something was not good enough. I tested the changes on an iPhone, the same setup the staff use, and reported what broke; several of the iOS fixes above came from those sessions. Where an option was proposed, I usually asked for two or three versions as screenshots first and chose or rejected them before any code changed.
 
 ---
 
@@ -211,7 +223,7 @@ The end-to-end tests run the real functions against a fake Make endpoint and che
 
 *The Make scenario and the Story template are private because the system is in production and offered commercially. Happy to walk through them in a call.*
 
-**Contact:** https://www.linkedin.com/in/daviddr44/ · https://davidribeiro.me/ · daviddr3023@gmail.com
+**Contact:** [LinkedIn](https://www.linkedin.com/in/daviddr44/) · [davidribeiro.me](https://davidribeiro.me/) · daviddr3023@gmail.com
 
 ---
 
