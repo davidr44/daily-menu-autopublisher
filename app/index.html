@@ -6,6 +6,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <meta name="theme-color" content="#F3F3F1">
   <title>Ementa SR</title>
+  <!-- App no ecrã principal: ícone, nome e ecrã inteiro -->
+  <link rel="apple-touch-icon" href="icon-180.png">
+  <link rel="manifest" href="manifest.webmanifest">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Ementa SR">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&display=swap" rel="stylesheet">
@@ -69,8 +76,9 @@
     .loc-opt.on .i { visibility: visible; }
 
     .progress { display: flex; gap: 6px; margin: 16px 0 24px; }
-    .progress i { flex: 1; height: 4px; border-radius: 2px; background: var(--line); transition: background-color .25s var(--ease); }
-    .progress i.on { background: var(--red); }
+    .progress i { flex: 1; height: 4px; border-radius: 2px; background: var(--line); position: relative; overflow: hidden; }
+    .progress i::after { content: ""; position: absolute; inset: 0; background: var(--red); transform: scaleX(0); transform-origin: left; transition: transform .25s var(--ease); }
+    .progress i.on::after { transform: scaleX(1); }
 
     /* ── Passos ── */
     .step { display: none; }
@@ -109,6 +117,10 @@
       transition: background-color .12s var(--ease), border-color .12s var(--ease), color .12s var(--ease), transform .1s var(--ease);
     }
     .tile:active { transform: scale(0.97); }
+    .tile.entrou { animation: entrar .2s var(--ease); }
+    .tile.saiu { animation: sair .2s var(--ease); }
+    @keyframes entrar { from { transform: scale(0.96); background-color: var(--card); color: var(--ink); border-color: var(--line); } to { transform: none; } }
+    @keyframes sair { from { transform: scale(0.96); background-color: var(--red); color: #fff; border-color: var(--red); } to { transform: none; } }
     .tile.on { background: var(--red); border-color: var(--red); color: #fff; box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18), 0 4px 12px rgba(200, 38, 26, 0.20); }
 
     /* Pesquisa */
@@ -259,7 +271,8 @@
       display: flex; flex-direction: column; align-items: center; justify-content: center;
       padding: 24px 20px; animation: fadeIn .25s var(--ease);
     }
-    .success .receipt { width: 100%; max-width: 360px; }
+    .success .receipt { width: 100%; max-width: 360px; animation: subir .25s var(--ease) both; }
+    @keyframes subir { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
     .stamp {
       position: absolute; right: 20px; top: 150px; transform: rotate(-9deg);
       border: 3px solid var(--red); border-radius: 10px; padding: 8px 14px;
@@ -828,6 +841,8 @@
       else if (type === 'sopas' && sel.size >= 2) { showToast('Máximo 2 sopas. Tira uma para escolher outra.'); return false; }
       else sel.add(v);
       renderTiles(type); updateMain();
+      const t = [...document.querySelectorAll('#' + type + 'Tiles .tile')].find(x => x.dataset.v === v);
+      if (t) t.classList.add(sel.has(v) ? 'entrou' : 'saiu');
       guardarRascunho();
       if (pkType === type) renderLista();
       return true;
