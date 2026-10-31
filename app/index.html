@@ -166,8 +166,11 @@
 
     .all-list { margin-top: 12px; background: var(--card); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }
     .all-letter { padding: 12px 16px 4px; font-size: 14px; font-weight: 800; color: var(--ink-2); background: var(--bg); border-bottom: 1px solid var(--line); }
-    .all-row { display: block; width: 100%; text-align: left; padding: 14px 16px; border: none; border-bottom: 1px solid var(--line); background: var(--card); font-size: 16px; cursor: pointer; touch-action: manipulation; }
+    .all-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; width: 100%; text-align: left; padding: 14px 16px; border: none; border-bottom: 1px solid var(--line); background: var(--card); font-size: 16px; cursor: pointer; touch-action: manipulation; }
     .all-row.on { background: var(--red); color: #fff; font-weight: 600; border-bottom-color: var(--red); }
+    .all-row .del { flex-shrink: 0; min-width: 32px; padding: 6px 10px; margin: -6px -8px -6px 0; border-radius: 8px; text-align: center; font-size: 14px; font-weight: 600; color: var(--ink-2); }
+    .all-row.on .del { color: #fff; }
+    .all-row .del.armado { background: var(--ink); color: #fff; }
     .res {
       display: flex; align-items: center; justify-content: space-between; gap: 12px;
       width: 100%; text-align: left; border: none; background: none;
@@ -570,6 +573,44 @@
       if (n === 4) renderReceipt();
       updateMain();
       window.scrollTo(0, 0);
+      guardarRascunho();
+    }
+
+    // ── Rascunho do dia: se a app fechar a meio, ao voltar está tudo como ficou ──
+    const RASCUNHO_KEY = 'sr_rascunho';
+    let aRepor = false;
+    let rascunhoReposto = false;   // o aviso só aparece depois do PIN
+    function diaDeHoje() {
+      const d = new Date();
+      return d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate();
+    }
+    function guardarRascunho() {
+      if (aRepor) return;
+      try {
+        localStorage.setItem(RASCUNHO_KEY, JSON.stringify({
+          dia: diaDeHoje(), local: state.local, passo: current,
+          sopas: [...state.sopas], pratos: [...state.pratos]
+        }));
+      } catch (e) { }
+    }
+    function limparRascunho() {
+      try { localStorage.removeItem(RASCUNHO_KEY); } catch (e) { }
+    }
+    function reporRascunho() {
+      let r = null;
+      try { r = JSON.parse(localStorage.getItem(RASCUNHO_KEY) || 'null'); } catch (e) { }
+      if (!r || r.dia !== diaDeHoje()) { limparRascunho(); return false; }
+      const mudou = r.local || r.pratos.length || r.passo > 1 ||
+        r.sopas.length !== 1 || r.sopas[0] !== SOPA_FIXA;
+      if (!mudou) return false;
+      aRepor = true;
+      state.sopas = new Set(r.sopas);
+      state.pratos = new Set(r.pratos);
+      if (r.local) mudarLocal(r.local);
+      renderTiles('sopas'); renderTiles('pratos');
+      goStep(Math.min(Math.max(r.passo || 1, 1), 4));
+      aRepor = false;
+      return true;
     }
 
     function mainAction() {
@@ -624,6 +665,7 @@
       document.getElementById('localPill').classList.remove('placeholder');
       if (current === 4) renderReceipt();
       updateMain();
+      guardarRascunho();
     }
 
     // ── Sopas e pratos ──
@@ -712,7 +754,9 @@
       document.getElementById('pkSearchBox').classList.toggle('has-text', inp.value.length > 0);
       const all = getAll(type);
       const sel = state[type];
-      const row = (x, html) => `<button class="all-row${sel.has(x) ? ' on' : ''}" data-v="${esc(x)}">${html || esc(x)}</button>`;
+      const meus = loadExtra()[type];
+      const row = (x, html) => `<button class="all-row${sel.has(x) ? ' on' : ''}${meus.includes(x) ? ' meu' : ''}" data-v="${esc(x)}"><span>${html || esc(x)}</span>` +
+        (meus.includes(x) ? `<span class="del" aria-label="Apagar da lista">✕</span>` : '') + `</button>`;
       let h = '';
       if (!q) {
         const ord = [...all].sort((a, b) => a.localeCompare(b, 'pt', { sensitivity: 'base' }));
@@ -746,6 +790,17 @@
     document.getElementById('pkList').addEventListener('click', e => {
       const r = e.target.closest('.all-row'); if (!r || !pkType) return;
       const type = pkType;
+      // ✕ num prato adicionado: 1.º toque pergunta, 2.º toque apaga
+      const d = e.target.closest('.del');
+      if (d) {
+        if (!d.classList.contains('armado')) {
+          document.querySelectorAll('#pkList .del.armado').forEach(x => { x.classList.remove('armado'); x.textContent = '✕'; });
+          d.classList.add('armado'); d.textContent = 'Apagar?';
+          return;
+        }
+        apagarExtra(type, r.dataset.v);
+        return;
+      }
       if (r.dataset.new) {
         const v = r.dataset.new;
         saveExtra(type, v);
@@ -757,12 +812,23 @@
       toggle(type, r.dataset.v);
     });
 
+    function apagarExtra(type, v) {
+      const ex = loadExtra();
+      ex[type] = ex[type].filter(x => x !== v);
+      try { localStorage.setItem('sr_extras', JSON.stringify(ex)); } catch (e) { }
+      state[type].delete(v);
+      renderTiles(type); updateMain(); guardarRascunho();
+      renderLista();
+      showToast('“' + v + '” apagad' + (type === 'sopas' ? 'a' : 'o') + ' da lista');
+    }
+
     function toggle(type, v) {
       const sel = state[type];
       if (sel.has(v)) sel.delete(v);
       else if (type === 'sopas' && sel.size >= 2) { showToast('Máximo 2 sopas. Tira uma para escolher outra.'); return false; }
       else sel.add(v);
       renderTiles(type); updateMain();
+      guardarRascunho();
       if (pkType === type) renderLista();
       return true;
     }
@@ -801,6 +867,7 @@
           })
         });
         if (!r.ok) throw new Error('HTTP ' + r.status);
+        limparRascunho();
         enviando = false;
         showSuccess();
       } catch (e) {
@@ -835,6 +902,7 @@
       renderTiles('sopas'); renderTiles('pratos');
       document.getElementById('successOverlay')?.remove();
       goStep(1);
+      limparRascunho();
     }
 
     function showToast(msg) {
@@ -846,9 +914,12 @@
 
     document.addEventListener('DOMContentLoaded', () => {
       checkPin();
+      aRepor = true;   // não apagar o rascunho antes de o ler
       document.getElementById('dateLine').textContent = hoje();
       renderTiles('sopas'); renderTiles('pratos');
       goStep(1);
+      aRepor = false;
+      rascunhoReposto = reporRascunho();
     });
 
     // ── PIN ──────────────────────────────────────────────
@@ -898,6 +969,7 @@
     function checkPinCode() {
       if (PINS_VALIDOS.includes(pinDigitos)) {
         document.getElementById('pinScreen').classList.add('hidden');
+        if (rascunhoReposto) { rascunhoReposto = false; showToast('Continuas onde ficaste.'); }
         pinDigitos = '';
         updatePinDots();
       } else {
