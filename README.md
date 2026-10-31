@@ -48,7 +48,7 @@ The goal: **the people who know the menu tap a few options, and a brand-consiste
 
 The last two lines of the Story ("Grelhados no Carvão", "Frango no Churrasco") are fixed in the template, so staff never have to pick them.
 
-![Staff app: location, soups, dishes, stamped receipt](assets/03-staff-app.png)
+![Staff app: location, soups, dishes, stamped receipt](assets/03-staff-app-screens.png)
 
 ---
 
