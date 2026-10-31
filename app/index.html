@@ -253,13 +253,20 @@
     /* Enviada */
     .success {
       position: fixed; inset: 0; z-index: 1000; background: var(--bg);
-      display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px;
-      padding: 32px; text-align: center; animation: fadeIn .3s var(--ease);
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      padding: 24px 20px; animation: fadeIn .25s var(--ease);
     }
-    .success-mark { width: 88px; height: 88px; border-radius: 50%; background: var(--ok); color: #fff; display: flex; align-items: center; justify-content: center; margin-bottom: 8px; animation: pop .35s var(--ease); }
-    .success-mark svg { width: 44px; height: 44px; stroke: currentColor; fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
-    .success-title { font-size: 32px; font-weight: 800; letter-spacing: -0.02em; }
-    .success-text { font-size: 16px; color: var(--ink-2); max-width: 280px; line-height: 1.5; }
+    .success .receipt { width: 100%; max-width: 360px; }
+    .stamp {
+      position: absolute; right: 20px; top: 150px; transform: rotate(-9deg);
+      border: 3px solid var(--red); border-radius: 10px; padding: 8px 14px;
+      color: var(--red); background: rgba(255, 255, 255, 0.6); text-align: center;
+      font-size: 22px; font-weight: 800; letter-spacing: 0.06em; line-height: 1.1;
+      animation: carimbo .32s cubic-bezier(0.3, 1.4, 0.5, 1) .25s both;
+    }
+    .stamp small { display: block; font-size: 13px; font-weight: 600; letter-spacing: 0.04em; }
+    @keyframes carimbo { from { opacity: 0; transform: rotate(-9deg) scale(1.8); } to { opacity: 0.95; transform: rotate(-9deg) scale(1); } }
+    .success-text { font-size: 16px; color: var(--ink-2); max-width: 300px; line-height: 1.5; text-align: center; margin-top: 24px; }
     @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
     /* PIN */
@@ -812,12 +819,14 @@
       const o = document.createElement('div');
       o.id = 'successOverlay';
       o.className = 'success';
+      const hora = new Date().toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' });
+      // o mesmo talão do passo 4, agora carimbado
       o.innerHTML =
-        '<div class="success-mark"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div>' +
-        '<div class="success-title">Ementa enviada</div>' +
-        '<div class="success-text">Vai sair no Instagram e no Facebook de ' + esc(state.local) + ' dentro de momentos.</div>';
+        '<div class="receipt">' + document.getElementById('receipt').innerHTML +
+        '<div class="stamp" role="img" aria-label="Enviada às ' + hora + '">ENVIADA<small>' + hora + '</small></div></div>' +
+        '<div class="success-text">A Story sai no Instagram e no Facebook dentro de momentos.</div>';
       document.body.appendChild(o);
-      setTimeout(resetForm, 3500);
+      setTimeout(resetForm, 4000);
     }
 
     function resetForm() {
