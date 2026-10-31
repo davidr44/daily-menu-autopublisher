@@ -316,18 +316,18 @@
     </div>
     <div class="pin-error" id="pinErro"></div>
     <div class="pin-pad">
-      <div class="pin-btn" onclick="pinPress('1')">1</div>
-      <div class="pin-btn" onclick="pinPress('2')">2</div>
-      <div class="pin-btn" onclick="pinPress('3')">3</div>
-      <div class="pin-btn" onclick="pinPress('4')">4</div>
-      <div class="pin-btn" onclick="pinPress('5')">5</div>
-      <div class="pin-btn" onclick="pinPress('6')">6</div>
-      <div class="pin-btn" onclick="pinPress('7')">7</div>
-      <div class="pin-btn" onclick="pinPress('8')">8</div>
-      <div class="pin-btn" onclick="pinPress('9')">9</div>
+      <div class="pin-btn" onpointerdown="pinPress('1')">1</div>
+      <div class="pin-btn" onpointerdown="pinPress('2')">2</div>
+      <div class="pin-btn" onpointerdown="pinPress('3')">3</div>
+      <div class="pin-btn" onpointerdown="pinPress('4')">4</div>
+      <div class="pin-btn" onpointerdown="pinPress('5')">5</div>
+      <div class="pin-btn" onpointerdown="pinPress('6')">6</div>
+      <div class="pin-btn" onpointerdown="pinPress('7')">7</div>
+      <div class="pin-btn" onpointerdown="pinPress('8')">8</div>
+      <div class="pin-btn" onpointerdown="pinPress('9')">9</div>
       <div class="pin-btn empty"></div>
-      <div class="pin-btn" onclick="pinPress('0')">0</div>
-      <div class="pin-btn ghost" onclick="pinDel()" aria-label="Apagar"><svg class="i" viewBox="0 0 24 24" style="width:26px;height:26px"><path d="M20 5H9l-7 7 7 7h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2Z"/><path d="m17 9-6 6"/><path d="m11 9 6 6"/></svg></div>
+      <div class="pin-btn" onpointerdown="pinPress('0')">0</div>
+      <div class="pin-btn ghost" onpointerdown="pinDel()" aria-label="Apagar"><svg class="i" viewBox="0 0 24 24" style="width:26px;height:26px"><path d="M20 5H9l-7 7 7 7h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2Z"/><path d="m17 9-6 6"/><path d="m11 9 6 6"/></svg></div>
     </div>
   </div>
 
@@ -351,8 +351,8 @@
       <h1>De onde é a ementa?</h1>
       <div class="sub" id="dateLine"></div>
       <div class="locais">
-        <button class="local" id="btnI" onclick="selectLocal('Infantado')">Infantado<svg class="i" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></svg></button>
-        <button class="local" id="btnO" onclick="selectLocal('Odivelas')">Odivelas<svg class="i" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></svg></button>
+        <button class="local" id="btnI" onclick="selectLocal('Infantado')">Infantado</button>
+        <button class="local" id="btnO" onclick="selectLocal('Odivelas')">Odivelas</button>
       </div>
     </section>
 
@@ -602,7 +602,6 @@
     // ── Local ──
     function selectLocal(l) {
       mudarLocal(l);
-      setTimeout(() => { if (current === 1) goStep(2); }, 180);
     }
 
     function abrirMenuLocal(e) {
@@ -886,11 +885,24 @@
       }
     }
 
+    function bloquearToquesAteLevantar() {
+      const b = document.body;
+      b.classList.add('a-desbloquear');
+      let feito = false;
+      const soltar = () => {
+        if (feito) return; feito = true;
+        setTimeout(() => b.classList.remove('a-desbloquear'), 120);
+        document.removeEventListener('pointerup', soltar, true);
+      };
+      document.addEventListener('pointerup', soltar, true);
+      setTimeout(soltar, 800);   // garantia, caso o dedo já tenha saído
+    }
+
     function checkPinCode() {
       if (PINS_VALIDOS.includes(pinDigitos)) {
-        // durante meio segundo ignora toques, para o dedo que acabou de marcar o PIN não escolher um local sem querer
-        document.body.classList.add('a-desbloquear');
-        setTimeout(() => document.body.classList.remove('a-desbloquear'), 500);
+        // As teclas reagem ao encostar o dedo (resposta imediata). Até o dedo sair do ecrã
+        // a app ignora toques, para esse mesmo toque não escolher um local sem querer.
+        bloquearToquesAteLevantar();
         document.getElementById('pinScreen').classList.add('hidden');
         pinDigitos = '';
         updatePinDots();
