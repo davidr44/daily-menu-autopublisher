@@ -275,6 +275,7 @@
       display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 32px 24px;
     }
     .pin-screen.hidden { display: none; }
+    body.a-desbloquear .wrap, body.a-desbloquear .foot { pointer-events: none; }
     .pin-logo { height: 64px; width: auto; margin-bottom: 24px; mix-blend-mode: multiply; }
     .pin-title { font-size: 32px; font-weight: 800; letter-spacing: -0.02em; text-align: center; }
     .pin-sub { font-size: 16px; color: var(--ink-2); text-align: center; margin-top: 4px; }
@@ -315,18 +316,18 @@
     </div>
     <div class="pin-error" id="pinErro"></div>
     <div class="pin-pad">
-      <div class="pin-btn" onpointerdown="pinPress('1')">1</div>
-      <div class="pin-btn" onpointerdown="pinPress('2')">2</div>
-      <div class="pin-btn" onpointerdown="pinPress('3')">3</div>
-      <div class="pin-btn" onpointerdown="pinPress('4')">4</div>
-      <div class="pin-btn" onpointerdown="pinPress('5')">5</div>
-      <div class="pin-btn" onpointerdown="pinPress('6')">6</div>
-      <div class="pin-btn" onpointerdown="pinPress('7')">7</div>
-      <div class="pin-btn" onpointerdown="pinPress('8')">8</div>
-      <div class="pin-btn" onpointerdown="pinPress('9')">9</div>
+      <div class="pin-btn" onclick="pinPress('1')">1</div>
+      <div class="pin-btn" onclick="pinPress('2')">2</div>
+      <div class="pin-btn" onclick="pinPress('3')">3</div>
+      <div class="pin-btn" onclick="pinPress('4')">4</div>
+      <div class="pin-btn" onclick="pinPress('5')">5</div>
+      <div class="pin-btn" onclick="pinPress('6')">6</div>
+      <div class="pin-btn" onclick="pinPress('7')">7</div>
+      <div class="pin-btn" onclick="pinPress('8')">8</div>
+      <div class="pin-btn" onclick="pinPress('9')">9</div>
       <div class="pin-btn empty"></div>
-      <div class="pin-btn" onpointerdown="pinPress('0')">0</div>
-      <div class="pin-btn ghost" onpointerdown="pinDel()" aria-label="Apagar"><svg class="i" viewBox="0 0 24 24" style="width:26px;height:26px"><path d="M20 5H9l-7 7 7 7h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2Z"/><path d="m17 9-6 6"/><path d="m11 9 6 6"/></svg></div>
+      <div class="pin-btn" onclick="pinPress('0')">0</div>
+      <div class="pin-btn ghost" onclick="pinDel()" aria-label="Apagar"><svg class="i" viewBox="0 0 24 24" style="width:26px;height:26px"><path d="M20 5H9l-7 7 7 7h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2Z"/><path d="m17 9-6 6"/><path d="m11 9 6 6"/></svg></div>
     </div>
   </div>
 
@@ -892,6 +893,9 @@
     function checkPinCode() {
       if (PINS_VALIDOS.includes(pinDigitos)) {
         try { localStorage.setItem(PIN_KEY, Date.now().toString()); } catch (e) { }
+        // durante meio segundo ignora toques, para o dedo que acabou de marcar o PIN não escolher um local sem querer
+        document.body.classList.add('a-desbloquear');
+        setTimeout(() => document.body.classList.remove('a-desbloquear'), 500);
         document.getElementById('pinScreen').classList.add('hidden');
         pinDigitos = '';
         updatePinDots();
