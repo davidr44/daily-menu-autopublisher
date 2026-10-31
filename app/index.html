@@ -601,8 +601,9 @@
       guardarRascunho();
     }
 
-    // ── Rascunho do dia: se a app fechar a meio, ao voltar está tudo como ficou ──
+    // ── Rascunho: se a app fechar a meio, ao voltar (até 15 minutos depois) está tudo como ficou ──
     const RASCUNHO_KEY = 'sr_rascunho';
+    const RASCUNHO_MINUTOS = 15;
     let aRepor = false;
     let rascunhoReposto = false;   // o aviso só aparece depois do PIN
     function diaDeHoje() {
@@ -613,7 +614,7 @@
       if (aRepor) return;
       try {
         localStorage.setItem(RASCUNHO_KEY, JSON.stringify({
-          dia: diaDeHoje(), local: state.local, passo: current,
+          dia: diaDeHoje(), quando: Date.now(), local: state.local, passo: current,
           sopas: [...state.sopas], pratos: [...state.pratos]
         }));
       } catch (e) { }
@@ -624,7 +625,7 @@
     function reporRascunho() {
       let r = null;
       try { r = JSON.parse(localStorage.getItem(RASCUNHO_KEY) || 'null'); } catch (e) { }
-      if (!r || r.dia !== diaDeHoje()) { limparRascunho(); return false; }
+      if (!r || r.dia !== diaDeHoje() || !r.quando || Date.now() - r.quando > RASCUNHO_MINUTOS * 60000) { limparRascunho(); return false; }
       const mudou = r.local || r.pratos.length || r.passo > 1 ||
         r.sopas.length !== 1 || r.sopas[0] !== SOPA_FIXA;
       if (!mudou) return false;
