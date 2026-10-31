@@ -748,16 +748,27 @@
       // Com o teclado aberto, o Safari desloca o ecrã inteiro em vez de deslizar a lista;
       // sem teclado, a lista desliza sempre e nada mais mexe.
       const inp = document.getElementById('pkSearch');
-      lista.addEventListener('touchstart', () => {
-        if (document.activeElement === inp) inp.blur();
+      // No deslize que fecha o teclado, o Safari não desliza a lista sozinho:
+      // nesse deslize a app move a lista ela própria, a acompanhar o dedo.
+      let manual = false, yIni = 0, topoIni = 0;
+      lista.addEventListener('touchstart', e => {
+        manual = document.activeElement === inp;
+        yIni = e.touches[0].clientY; topoIni = lista.scrollTop;
+        if (manual) inp.blur();
         const max = lista.scrollHeight - lista.clientHeight;
         if (max <= 0) return;
         if (lista.scrollTop <= 0) lista.scrollTop = 1;
         else if (lista.scrollTop >= max) lista.scrollTop = max - 1;
       }, { passive: true });
       pk.addEventListener('touchmove', e => {
-        if (!lista.contains(e.target)) e.preventDefault();
+        if (!lista.contains(e.target)) { e.preventDefault(); return; }
+        if (manual) {
+          e.preventDefault();
+          lista.scrollTop = topoIni - (e.touches[0].clientY - yIni);
+        }
       }, { passive: false });
+      lista.addEventListener('touchend', () => { manual = false; });
+      lista.addEventListener('touchcancel', () => { manual = false; });
     })();
 
     function travarFundo() {
