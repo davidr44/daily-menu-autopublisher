@@ -411,7 +411,6 @@
       <h1>Está tudo certo?</h1>
       <div class="sub">Confere antes de publicar.</div>
       <div class="receipt" id="receipt"></div>
-      <div class="r-note">Vai para o Instagram e o Facebook.</div>
     </section>
   </div>
 
@@ -646,7 +645,7 @@
 
     function abrirConfirmacao() {
       document.getElementById('sheetTxt').textContent =
-        'A ementa de ' + state.local + ' sai já no Instagram e no Facebook.';
+        'A ementa de ' + state.local + ' vai ser publicada no Instagram e no Facebook.';
       document.getElementById('sheet').classList.add('show');
     }
     function fecharConfirmacao() {
@@ -742,14 +741,17 @@
     (function () {
       const pk = document.getElementById('picker');
       const lista = document.getElementById('pkList');
-      let y0 = 0;
-      pk.addEventListener('touchstart', e => { y0 = e.touches[0].clientY; }, { passive: true });
+      // Bug conhecido do Safari no iPhone: se a lista está mesmo no topo (ou no fim), o 1.º deslize
+      // vai para a página de trás (que está presa) e parece tudo travado. Afastar a lista 1px do
+      // limite antes de cada toque garante que o deslize fica sempre na lista.
+      lista.addEventListener('touchstart', () => {
+        const max = lista.scrollHeight - lista.clientHeight;
+        if (max <= 0) return;
+        if (lista.scrollTop <= 0) lista.scrollTop = 1;
+        else if (lista.scrollTop >= max) lista.scrollTop = max - 1;
+      }, { passive: true });
       pk.addEventListener('touchmove', e => {
-        if (!lista.contains(e.target)) { e.preventDefault(); return; }
-        const dy = e.touches[0].clientY - y0;
-        const noTopo = lista.scrollTop <= 0;
-        const noFim = lista.scrollTop + lista.clientHeight >= lista.scrollHeight - 1;
-        if (lista.scrollHeight <= lista.clientHeight || (noTopo && dy > 0) || (noFim && dy < 0)) e.preventDefault();
+        if (!lista.contains(e.target)) e.preventDefault();
       }, { passive: false });
     })();
 
@@ -933,7 +935,7 @@
       o.innerHTML =
         '<div class="receipt">' + document.getElementById('receipt').innerHTML +
         '<div class="stamp" role="img" aria-label="Enviada às ' + hora + '">ENVIADA<small>' + hora + '</small></div></div>' +
-        '<div class="success-text">A Story sai no Instagram e no Facebook dentro de momentos.</div>';
+        '<div class="success-text">A Story está a ser publicada no Instagram e no Facebook.</div>';
       document.body.appendChild(o);
       setTimeout(resetForm, 4000);
     }
