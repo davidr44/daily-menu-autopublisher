@@ -24,6 +24,7 @@
     }
 
     * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    html { touch-action: manipulation; } /* sem zoom de duplo toque, sem atrasar toques rápidos */
 
     body {
       font-family: 'Bricolage Grotesque', system-ui, sans-serif;
@@ -136,12 +137,13 @@
     .search-btn .i { width: 22px; height: 22px; }
 
     /* Lista completa (ecrã por cima) */
+    /* Sem deslizar de baixo: no iPhone, focar uma caixa fora do ecrã fazia a página saltar */
     .picker {
-      position: fixed; inset: 0; z-index: 1500; background: var(--bg);
-      transform: translateY(100%); visibility: hidden;
-      transition: transform .3s var(--ease), visibility 0s linear .3s;
+      position: fixed; top: 0; left: 0; right: 0; height: 100%; z-index: 1500; background: var(--bg);
+      opacity: 0; visibility: hidden;
+      transition: opacity .18s var(--ease), visibility 0s linear .18s;
     }
-    .picker.show { transform: none; visibility: visible; transition: transform .3s var(--ease); }
+    .picker.show { opacity: 1; visibility: visible; transition: opacity .18s var(--ease); }
     .pk-inner { max-width: 480px; height: 100%; margin: 0 auto; display: flex; flex-direction: column; padding: 16px 20px 0; }
     .pk-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
     .pk-ttl { font-size: 28px; font-weight: 800; letter-spacing: -0.02em; }
@@ -614,14 +616,45 @@
       renderLista();
       document.getElementById('pkList').scrollTop = 0;
       const pk = document.getElementById('picker');
+      travarFundo();
       pk.classList.add('show'); pk.setAttribute('aria-hidden', 'false');
-      if (comTeclado) inp.focus();
+      ajustarPicker();
+      if (comTeclado) inp.focus({ preventScroll: true });
     }
     function fecharLista() {
       document.getElementById('pkSearch').blur();
       const pk = document.getElementById('picker');
+      const estavaAberta = pk.classList.contains('show');
       pk.classList.remove('show'); pk.setAttribute('aria-hidden', 'true');
+      pk.style.height = ''; pk.style.top = '';
       pkType = null;
+      if (estavaAberta) soltarFundo();
+    }
+
+    // Com o ecrã da lista aberto, a página de trás não mexe
+    let scrollGuardado = 0;
+    function travarFundo() {
+      scrollGuardado = window.scrollY;
+      const b = document.body.style;
+      b.position = 'fixed'; b.top = (-scrollGuardado) + 'px'; b.left = '0'; b.right = '0';
+    }
+    function soltarFundo() {
+      const b = document.body.style;
+      b.position = ''; b.top = ''; b.left = ''; b.right = '';
+      window.scrollTo(0, scrollGuardado);
+    }
+
+    // O ecrã da lista ocupa só a parte visível acima do teclado (iPhone e Android)
+    function ajustarPicker() {
+      const pk = document.getElementById('picker');
+      const vv = window.visualViewport;
+      if (!vv || !pk.classList.contains('show')) return;
+      pk.style.height = vv.height + 'px';
+      pk.style.top = vv.offsetTop + 'px';
+    }
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener('resize', ajustarPicker);
+      window.visualViewport.addEventListener('scroll', ajustarPicker);
     }
     function limparPesquisa() {
       const inp = document.getElementById('pkSearch');
@@ -840,12 +873,6 @@
     });
 
     // Bloqueia zoom com duplo toque e com dois dedos (iOS)
-    let lastTouchEnd = 0;
-    document.addEventListener('touchend', function (event) {
-      const now = Date.now();
-      if (now - lastTouchEnd <= 300) event.preventDefault();
-      lastTouchEnd = now;
-    }, { passive: false });
     document.addEventListener('gesturestart', e => e.preventDefault());
     document.body.addEventListener('touchmove', function (event) {
       const pinVisible = !document.getElementById('pinScreen').classList.contains('hidden');
