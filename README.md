@@ -2,7 +2,7 @@
 
 **A production automation that turns a takeaway's daily menu into branded Instagram and Facebook Stories, published in under a minute from a staff member's phone.**
 
-> This repository is a **case study**, not source code. The system is live, used every day by **Churrasqueira SR**, a family-run takeaway with two locations, and I'm offering it to other restaurants. The implementation (the orchestration, the design template and the app) is private. This page explains what I built, how it fits together and why I made each decision.
+> The system is live and used every day by **Churrasqueira SR**, a family-run takeaway with two locations. This repository holds the **staff app and its serverless API** (code, tests, CI) and a **case study** of the automation behind it. The orchestration and the Story design template stay private; this page explains what they do and why each decision was made.
 
 ---
 
@@ -36,9 +36,7 @@ The goal: **the people who know the menu tap a few options, and a brand-consiste
 5. **A Telegram message confirms it** with the location, the time and the platforms. If a stage fails, the pipeline quietly retries it. If it still fails, one message says what broke and includes the menu text and the image, so the Story can be posted by hand in seconds.
 6. **At 11:00 on opening days, a watchdog checks** that every location has published. If one hasn't, it sends a one-line reminder.
 
-| Staff app | Published Story | Telegram |
-|---|---|---|
-| ![Staff app](assets/03-staff-app.png) | ![Story example](assets/04-story-example.png) | ![Telegram messages](assets/05-telegram.png) |
+![Staff app: location, soups, dishes, stamped receipt](assets/03-staff-app.png)
 
 ---
 
@@ -46,7 +44,8 @@ The goal: **the people who know the menu tap a few options, and a brand-consiste
 
 ```mermaid
 flowchart LR
-    A[Staff mobile web app] -->|menu payload| B[Orchestrator<br/>Make]
+    A[Staff mobile web app] -->|PIN + menu| N[Netlify Functions<br/>PIN check · validation]
+    N -->|menu payload| B[Orchestrator<br/>Make]
     B --> C{Route by location}
     C --> D[Render Story<br/>HTML/CSS → image]
     D --> E[Convert & host<br/>public JPEG]
@@ -68,7 +67,8 @@ flowchart LR
 
 | Layer | Tool | Role |
 |---|---|---|
-| Input | Mobile-first web app (static hosting) | Menu selection by staff |
+| Input | Mobile-first web app on Netlify (`app/`) | Menu selection by staff, installable on the home screen |
+| API | Netlify Functions (`netlify/functions/`) | PIN check, input validation, holds the webhook secret |
 | Orchestration | Make | Routing, sequencing, error routes, retries, run history |
 | Rendering | HTML/CSS-to-image API | Turns a branded HTML template + menu data into an image |
 | Media hosting | Image CDN | Public JPEG URL that Meta can fetch |
@@ -120,6 +120,15 @@ The whole system runs on free plans. In Make that means 1,000 operations a month
 ### 10. Staff UX over feature count
 Preset lists of the usual soups and dishes, large tap targets, one location picker and one send button. Access is restricted to staff. Picking from lists instead of typing also removed the typo-fixing step I used to do by hand. The fewer decisions the user has to make, the more likely the Story goes out every single day.
 
+In October 2026 I rebuilt the app around that idea (the full history is in the commits):
+- **One decision per screen.** Location, soups, dishes, review: a progress bar, one primary button in the thumb zone and a confirmation before publishing.
+- **Buttons chosen from data, not guesses.** I counted 108 days of menus: 101 different dishes, about 9 per day. 20 buttons would cover 64% of what gets picked; 30 cover 77%, and 40 only add 9 points for twice the scrolling. The app shows the 30 most frequent in a fixed order (so positions become muscle memory), and search covers the long tail. Canja is preselected because it is on the menu every day.
+- **Built for the phone it runs on.** Several fixes are specific to Safari on iPhone: a ghost tap that selected a location right after the PIN, the viewport panning instead of the list scrolling while the keyboard is open, the first swipe being swallowed at the edge of a scroll container. Each one is described in its commit.
+- **Small things that prevent bad days.** A draft survives the app closing mid-way (15 minutes), dishes added by mistake can be deleted, and the end screen is the same receipt with a timestamped "sent" stamp, so staff see exactly what went out.
+
+### 11. No secrets in the browser
+The first version checked the PIN in the page and posted straight to the Make webhook. The current version ships no secrets: two Netlify Functions check the PIN, validate the menu (known location, 1–2 soups, sensible lengths) and only then forward `{local, sopas, pratos}` to Make. PINs and the webhook URL live in environment variables.
+
 ---
 
 ## Things I tried and dropped
@@ -155,11 +164,32 @@ Then I tried to publish that same ready container with the ID written in by hand
 
 ---
 
+## The staff app in this repo
+
+```
+app/                    the single-page app (HTML, CSS and JS in one file, no build step)
+netlify/functions/      /api/pin and /api/publicar
+tests/unit/             tests for the functions (node:test)
+tests/e2e/              Playwright tests on an iPhone-sized viewport
+tests/server.mjs        local server: serves the app, runs the real functions, fakes Make
+```
+
+```bash
+npm install
+npm run dev     # http://127.0.0.1:4173 (test PIN: 1234)
+npm test        # unit + end-to-end
+```
+
+The end-to-end tests run the real functions against a fake Make endpoint and check what Make would receive: the full publish flow, wrong PIN, the 2-soup limit, search/add/delete, draft restore and expiry, a Make outage, and that no secret ends up in the page. They run on every push (GitHub Actions).
+
+---
+
 ## Current limitations
 
 - **Rendering volume** is bounded by the image API's free tier. That's fine for daily menus, but it would need a paid plan at higher volume or for more locations.
 - **Design changes** require editing the HTML template, not a visual editor.
 - **The watchdog only knows about automated publications.** If a Story is posted by hand after a failure, the 11:00 reminder still fires for that location.
+- **A 4-digit PIN is a gate for staff, not strong authentication.** It keeps the public out; it would not stop a determined attacker who can try many PINs.
 - **Dependence on Meta's business setup.** Publishing relies on account linking and permissions configured on the platform, so a change on that side can break publishing without any change in the pipeline.
 
 ## Ideas for next iterations
@@ -179,7 +209,7 @@ Then I tried to publish that same ready container with the ID written in by hand
 
 ---
 
-*The implementation is private because the system is in production and offered commercially. Happy to walk through it in a call.*
+*The Make scenario and the Story template are private because the system is in production and offered commercially. Happy to walk through them in a call.*
 
 **Contact:** [your LinkedIn] · [your portfolio] · [your email]
 
