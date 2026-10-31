@@ -42,11 +42,11 @@
 
     svg.i { width: 20px; height: 20px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
 
-    .wrap { max-width: 480px; margin: 0 auto; padding: 16px 20px calc(120px + env(safe-area-inset-bottom)); }
+    .wrap { max-width: 480px; margin: 0 auto; padding: 24px 20px calc(120px + env(safe-area-inset-bottom)); }
 
     /* ── Topo ── */
-    .top { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 40px; }
-    .top-logo { height: 36px; width: auto; display: block; mix-blend-mode: multiply; }
+    .top { position: relative; display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 56px; }
+    .top-logo { height: 48px; width: auto; display: block; mix-blend-mode: multiply; }
     .pill {
       display: flex; align-items: center; gap: 4px;
       font-size: 16px; font-weight: 600; padding: 8px 0 8px 8px; border: none; background: none; color: var(--ink);
@@ -54,6 +54,18 @@
     }
     .pill .i { width: 16px; height: 16px; color: var(--ink-2); }
     .pill.placeholder { visibility: hidden; }
+    .loc-menu {
+      position: absolute; top: calc(100% + 4px); right: 0; z-index: 60; min-width: 200px;
+      background: var(--card); border: 1px solid var(--line); border-radius: 14px; overflow: hidden;
+      box-shadow: 0 12px 32px rgba(23, 24, 26, 0.14);
+      opacity: 0; transform: translateY(-6px); pointer-events: none; transition: opacity .15s var(--ease), transform .15s var(--ease);
+    }
+    .loc-menu.show { opacity: 1; transform: none; pointer-events: auto; }
+    .loc-opt { display: flex; align-items: center; justify-content: space-between; width: 100%; padding: 16px; border: none; background: none; font-size: 17px; font-weight: 600; text-align: left; cursor: pointer; }
+    .loc-opt + .loc-opt { border-top: 1px solid var(--line); }
+    .loc-opt .i { visibility: hidden; color: var(--red); }
+    .loc-opt.on { color: var(--red); }
+    .loc-opt.on .i { visibility: visible; }
 
     .progress { display: flex; gap: 6px; margin: 16px 0 24px; }
     .progress i { flex: 1; height: 4px; border-radius: 2px; background: var(--line); transition: background-color .25s var(--ease); }
@@ -112,7 +124,25 @@
 
     .results { margin: -4px 0 12px; background: var(--card); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }
     .results:empty { display: none; }
-    .searching + .tiles { display: none; }
+    .searching + .tiles, .searching ~ .see-all, .searching ~ .all-list, .searching ~ .hint { display: none; }
+
+    /* Pesquisa fixa no topo ao fazer scroll */
+    .sticky { position: sticky; top: 0; z-index: 20; background: var(--bg); padding-top: 8px; margin-top: -8px; }
+    .hint { text-align: center; font-size: 15px; color: var(--ink-2); margin: 20px 0 4px; line-height: 1.5; }
+    .hint-link { border: none; background: none; padding: 0; font-size: 15px; font-weight: 600; color: var(--ink); text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+
+    /* Lista completa de pratos */
+    .see-all {
+      display: flex; align-items: center; justify-content: center; gap: 6px; width: 100%; margin-top: 12px;
+      min-height: 52px; border-radius: 14px; border: 1px dashed rgba(23, 24, 26, 0.25); background: transparent;
+      font-size: 16px; font-weight: 600; color: var(--ink); cursor: pointer; touch-action: manipulation;
+    }
+    .see-all .i { width: 18px; height: 18px; transition: transform .2s var(--ease); }
+    .see-all.open .i { transform: rotate(180deg); }
+    .all-list { margin-top: 12px; background: var(--card); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }
+    .all-letter { padding: 12px 16px 4px; font-size: 14px; font-weight: 800; color: var(--ink-2); background: var(--bg); border-bottom: 1px solid var(--line); }
+    .all-row { display: block; width: 100%; text-align: left; padding: 14px 16px; border: none; border-bottom: 1px solid var(--line); background: var(--card); font-size: 16px; cursor: pointer; touch-action: manipulation; }
+    .all-row.on { background: var(--red); color: #fff; font-weight: 600; border-bottom-color: var(--red); }
     .res {
       display: flex; align-items: center; justify-content: space-between; gap: 12px;
       width: 100%; text-align: left; border: none; background: none;
@@ -273,7 +303,11 @@
       <img class="top-logo" src="https://www.churrasqueirasr.pt/assets/img/logo-sr.png"
         onerror="this.onerror=null;this.src='https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTEUtsd4hVkx2VT8FNzBJzjV7fMZl8O7glf6A&s'"
         alt="Churrasqueira SR">
-      <button class="pill placeholder" id="localPill" onclick="if(state.local) goStep(1)" aria-label="Mudar local"><span id="localPillTxt"></span><svg class="i" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></button>
+      <button class="pill placeholder" id="localPill" onclick="abrirMenuLocal(event)" aria-label="Mudar local" aria-haspopup="true"><span id="localPillTxt"></span><svg class="i" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></button>
+      <div class="loc-menu" id="locMenu" role="menu">
+        <button class="loc-opt" data-l="Infantado" role="menuitem">Infantado<svg class="i" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></button>
+        <button class="loc-opt" data-l="Odivelas" role="menuitem">Odivelas<svg class="i" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></button>
+      </div>
     </div>
 
     <div class="progress" id="progress"><i></i><i></i><i></i><i></i></div>
@@ -294,13 +328,16 @@
       <div class="step-n">Passo 2 de 4</div>
       <h1>Que sopas há hoje?</h1>
       <div class="sub" id="sopasSub">Escolhe até 2.</div>
+      <div class="sticky">
       <div class="search" id="sopasSearchBox">
         <svg class="i" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
         <input id="sopasSearch" placeholder="Procurar outra sopa" autocomplete="off" autocorrect="off" spellcheck="false" oninput="onSearch('sopas')">
         <button class="clear" onclick="clearSearch('sopas')" aria-label="Limpar pesquisa"><svg class="i" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>
       </div>
+      </div>
       <div class="results" id="sopasResults"></div>
       <div class="tiles" id="sopasTiles"></div>
+      <p class="hint">Não está aqui? <button class="hint-link" onclick="irPesquisa('sopas')">Escreve na pesquisa</button> para a adicionar.</p>
     </section>
 
     <!-- 3. Pratos -->
@@ -308,13 +345,18 @@
       <div class="step-n">Passo 3 de 4</div>
       <h1>Que pratos há hoje?</h1>
       <div class="sub" id="pratosSub">Escolhe todos os que houver.</div>
+      <div class="sticky">
       <div class="search" id="pratosSearchBox">
         <svg class="i" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
         <input id="pratosSearch" placeholder="Procurar outro prato" autocomplete="off" autocorrect="off" spellcheck="false" oninput="onSearch('pratos')">
         <button class="clear" onclick="clearSearch('pratos')" aria-label="Limpar pesquisa"><svg class="i" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>
       </div>
+      </div>
       <div class="results" id="pratosResults"></div>
       <div class="tiles" id="pratosTiles"></div>
+      <p class="hint">Não está aqui? <button class="hint-link" onclick="irPesquisa('pratos')">Procura em cima</button> ou vê a lista toda.</p>
+      <button class="see-all" id="pratosSeeAll" onclick="toggleListaPratos()"></button>
+      <div class="all-list" id="pratosAll" hidden></div>
     </section>
 
     <!-- 4. Confirmar -->
@@ -405,7 +447,6 @@
       "Bacalhau lascado", "Escalope de vitela Mirandesa", "Polvo no forno", "Arroz de polvo"
     ];
 
-    const N_SOPAS_BOTOES = 12;
     const N_PRATOS_BOTOES = 20;
     let state = { local: null, sopas: new Set(), pratos: new Set() };
     let current = 1;
@@ -433,7 +474,7 @@
       return [...TOP_PRATOS, ...rest, ...ex.pratos.filter(p => !PRATOS.includes(p))];
     }
     function getTop(type) {
-      return type === 'sopas' ? SOPAS.slice(0, N_SOPAS_BOTOES) : getAll('pratos').slice(0, N_PRATOS_BOTOES);
+      return type === 'sopas' ? getAll('sopas') : getAll('pratos').slice(0, N_PRATOS_BOTOES);
     }
 
     function hoje() {
@@ -487,13 +528,34 @@
 
     // ── Local ──
     function selectLocal(l) {
+      mudarLocal(l);
+      setTimeout(() => { if (current === 1) goStep(2); }, 180);
+    }
+
+    function abrirMenuLocal(e) {
+      e.stopPropagation();
+      if (!state.local) return;
+      document.querySelectorAll('.loc-opt').forEach(o => o.classList.toggle('on', o.dataset.l === state.local));
+      document.getElementById('locMenu').classList.toggle('show');
+    }
+    function fecharMenuLocal() { document.getElementById('locMenu').classList.remove('show'); }
+    document.getElementById('locMenu').addEventListener('click', e => {
+      const o = e.target.closest('.loc-opt'); if (!o) return;
+      e.stopPropagation();
+      mudarLocal(o.dataset.l);
+      fecharMenuLocal();
+    });
+    document.addEventListener('click', fecharMenuLocal);
+
+    // Muda o local sem sair do passo atual nem perder o que já foi escolhido
+    function mudarLocal(l) {
       state.local = l;
       document.getElementById('btnI').classList.toggle('on', l === 'Infantado');
       document.getElementById('btnO').classList.toggle('on', l === 'Odivelas');
-      const p = document.getElementById('localPill');
-      document.getElementById('localPillTxt').textContent = l; p.classList.remove('placeholder');
+      document.getElementById('localPillTxt').textContent = l;
+      document.getElementById('localPill').classList.remove('placeholder');
+      if (current === 4) renderReceipt();
       updateMain();
-      setTimeout(() => { if (current === 1) goStep(2); }, 180);
     }
 
     // ── Sopas e pratos ──
@@ -511,12 +573,44 @@
       else sub.textContent = n === 0 ? 'Escolhe todos os que houver.' : (n === 1 ? '1 prato escolhido.' : n + ' pratos escolhidos.');
     }
 
+    function irPesquisa(type) {
+      const inp = document.getElementById(type + 'Search');
+      inp.scrollIntoView({ block: 'start', behavior: 'smooth' });
+      inp.focus({ preventScroll: true });
+    }
+
+    let listaAberta = false;
+    function toggleListaPratos() {
+      listaAberta = !listaAberta;
+      renderListaPratos();
+      if (!listaAberta) document.getElementById('pratosSeeAll').scrollIntoView({ block: 'center' });
+    }
+    function renderListaPratos() {
+      const btn = document.getElementById('pratosSeeAll');
+      const box = document.getElementById('pratosAll');
+      const all = getAll('pratos');
+      btn.classList.toggle('open', listaAberta);
+      btn.innerHTML = (listaAberta ? 'Esconder a lista' : 'Ver todos os pratos (' + all.length + ')') +
+        '<svg class="i" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg>';
+      box.hidden = !listaAberta;
+      if (!listaAberta) { box.innerHTML = ''; return; }
+      const ord = [...all].sort((a, b) => a.localeCompare(b, 'pt', { sensitivity: 'base' }));
+      let h = '', letra = '';
+      ord.forEach(x => {
+        const L = limpaAcentos(x).charAt(0).toUpperCase();
+        if (L !== letra) { letra = L; h += '<div class="all-letter">' + esc(L) + '</div>'; }
+        h += `<button class="all-row${state.pratos.has(x) ? ' on' : ''}" data-v="${esc(x)}">${esc(x)}</button>`;
+      });
+      box.innerHTML = h;
+    }
+
     function toggle(type, v) {
       const sel = state[type];
       if (sel.has(v)) sel.delete(v);
       else if (type === 'sopas' && sel.size >= 2) { showToast('Máximo 2 sopas. Tira uma para escolher outra.'); return false; }
       else sel.add(v);
       renderTiles(type); updateMain();
+      if (type === 'pratos' && listaAberta) renderListaPratos();
       return true;
     }
 
@@ -565,6 +659,10 @@
       clearSearch(type, true);
       document.getElementById(type + 'Search').blur();
     }
+
+    document.getElementById('pratosAll').addEventListener('click', e => {
+      const r = e.target.closest('.all-row'); if (r) toggle('pratos', r.dataset.v);
+    });
 
     ['sopas', 'pratos'].forEach(type => {
       document.getElementById(type + 'Tiles').addEventListener('click', e => {
@@ -633,7 +731,8 @@
       document.getElementById('btnO').classList.remove('on');
       const p = document.getElementById('localPill');
       document.getElementById('localPillTxt').textContent = ''; p.classList.add('placeholder');
-      renderTiles('sopas'); renderTiles('pratos');
+      listaAberta = false;
+      renderTiles('sopas'); renderTiles('pratos'); renderListaPratos();
       document.getElementById('successOverlay')?.remove();
       goStep(1);
     }
@@ -648,7 +747,7 @@
     document.addEventListener('DOMContentLoaded', () => {
       checkPin();
       document.getElementById('dateLine').textContent = hoje();
-      renderTiles('sopas'); renderTiles('pratos');
+      renderTiles('sopas'); renderTiles('pratos'); renderListaPratos();
       goStep(1);
     });
 
