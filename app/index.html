@@ -862,13 +862,9 @@
     const PIN_KEY = 'sr_pin_oficial'; // ← A chave nova para obrigar a aparecer agora
     let pinDigitos = '';
 
+    // O PIN é pedido sempre que a app abre (nada fica guardado no telemóvel)
     function checkPin() {
-      try {
-        const ts = parseInt(localStorage.getItem(PIN_KEY) || '0');
-        if (Date.now() - ts < PIN_MINUTOS * 60000) {
-          document.getElementById('pinScreen').classList.add('hidden');
-        }
-      } catch (e) { }
+      try { localStorage.removeItem(PIN_KEY); } catch (e) { }
     }
 
     function pinPress(d) {
@@ -892,7 +888,6 @@
 
     function checkPinCode() {
       if (PINS_VALIDOS.includes(pinDigitos)) {
-        try { localStorage.setItem(PIN_KEY, Date.now().toString()); } catch (e) { }
         // durante meio segundo ignora toques, para o dedo que acabou de marcar o PIN não escolher um local sem querer
         document.body.classList.add('a-desbloquear');
         setTimeout(() => document.body.classList.remove('a-desbloquear'), 500);
