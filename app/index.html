@@ -156,6 +156,9 @@
     }
     .pk-foot { margin-top: auto; padding: 12px 0 calc(16px + env(safe-area-inset-bottom)); }
     .pk-foot .btn-main { width: 100%; }
+    /* Enquanto se escreve, o teclado já ocupa o fundo: o "Feito" sai do caminho */
+    .picker.typing .pk-foot { display: none; }
+    .picker.typing .pk-list { margin-bottom: 8px; }
     .res .tag { color: inherit; }
     .all-row.add { color: var(--red); font-weight: 600; }
     .pk-empty { padding: 20px 16px; color: var(--ink-2); font-size: 15px; }
@@ -652,6 +655,15 @@
       pk.style.height = vv.height + 'px';
       pk.style.top = vv.offsetTop + 'px';
     }
+    const pkInput = document.getElementById('pkSearch');
+    pkInput.addEventListener('focus', () => document.getElementById('picker').classList.add('typing'));
+    pkInput.addEventListener('blur', () => {
+      const pk = document.getElementById('picker');
+      pk.classList.remove('typing');
+      // o teclado está a fechar: volta já à altura toda, sem esperar pelo Safari
+      pk.style.height = ''; pk.style.top = '';
+    });
+
     if (window.visualViewport) {
       window.visualViewport.addEventListener('resize', ajustarPicker);
       window.visualViewport.addEventListener('scroll', ajustarPicker);
