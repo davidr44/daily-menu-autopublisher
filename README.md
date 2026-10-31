@@ -211,7 +211,7 @@ The end-to-end tests run the real functions against a fake Make endpoint and che
 
 *The Make scenario and the Story template are private because the system is in production and offered commercially. Happy to walk through them in a call.*
 
-**Contact:** [your LinkedIn] · [your portfolio] · [your email]
+**Contact:** https://www.linkedin.com/in/daviddr44/ · https://davidribeiro.me/ · daviddr3023@gmail.com
 
 ---
 
