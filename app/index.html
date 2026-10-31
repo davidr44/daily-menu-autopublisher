@@ -275,7 +275,6 @@
       display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 32px 24px;
     }
     .pin-screen.hidden { display: none; }
-    body.a-desbloquear .wrap, body.a-desbloquear .foot { pointer-events: none; }
     .pin-logo { height: 64px; width: auto; margin-bottom: 24px; mix-blend-mode: multiply; }
     .pin-title { font-size: 32px; font-weight: 800; letter-spacing: -0.02em; text-align: center; }
     .pin-sub { font-size: 16px; color: var(--ink-2); text-align: center; margin-top: 4px; }
@@ -290,7 +289,7 @@
       display: flex; align-items: center; justify-content: center; cursor: pointer; touch-action: manipulation;
       transition: background-color .1s var(--ease), transform .1s var(--ease);
     }
-    .pin-btn:active { background: var(--bg); transform: scale(0.96); }
+    .pin-btn:active, .pin-btn.press { background: var(--bg); transform: scale(0.96); }
     .pin-btn.ghost { background: transparent; border-color: transparent; color: var(--ink-2); }
     .pin-btn.empty { background: transparent; border: none; cursor: default; }
     .pin-btn.empty:active { transform: none; }
@@ -316,18 +315,18 @@
     </div>
     <div class="pin-error" id="pinErro"></div>
     <div class="pin-pad">
-      <div class="pin-btn" onpointerdown="pinPress('1')">1</div>
-      <div class="pin-btn" onpointerdown="pinPress('2')">2</div>
-      <div class="pin-btn" onpointerdown="pinPress('3')">3</div>
-      <div class="pin-btn" onpointerdown="pinPress('4')">4</div>
-      <div class="pin-btn" onpointerdown="pinPress('5')">5</div>
-      <div class="pin-btn" onpointerdown="pinPress('6')">6</div>
-      <div class="pin-btn" onpointerdown="pinPress('7')">7</div>
-      <div class="pin-btn" onpointerdown="pinPress('8')">8</div>
-      <div class="pin-btn" onpointerdown="pinPress('9')">9</div>
+      <div class="pin-btn" data-k="1">1</div>
+      <div class="pin-btn" data-k="2">2</div>
+      <div class="pin-btn" data-k="3">3</div>
+      <div class="pin-btn" data-k="4">4</div>
+      <div class="pin-btn" data-k="5">5</div>
+      <div class="pin-btn" data-k="6">6</div>
+      <div class="pin-btn" data-k="7">7</div>
+      <div class="pin-btn" data-k="8">8</div>
+      <div class="pin-btn" data-k="9">9</div>
       <div class="pin-btn empty"></div>
-      <div class="pin-btn" onpointerdown="pinPress('0')">0</div>
-      <div class="pin-btn ghost" onpointerdown="pinDel()" aria-label="Apagar"><svg class="i" viewBox="0 0 24 24" style="width:26px;height:26px"><path d="M20 5H9l-7 7 7 7h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2Z"/><path d="m17 9-6 6"/><path d="m11 9 6 6"/></svg></div>
+      <div class="pin-btn" data-k="0">0</div>
+      <div class="pin-btn ghost" data-k="del" aria-label="Apagar"><svg class="i" viewBox="0 0 24 24" style="width:26px;height:26px"><path d="M20 5H9l-7 7 7 7h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2Z"/><path d="m17 9-6 6"/><path d="m11 9 6 6"/></svg></div>
     </div>
   </div>
 
@@ -885,24 +884,22 @@
       }
     }
 
-    function bloquearToquesAteLevantar() {
-      const b = document.body;
-      b.classList.add('a-desbloquear');
-      let feito = false;
-      const soltar = () => {
-        if (feito) return; feito = true;
-        setTimeout(() => b.classList.remove('a-desbloquear'), 120);
-        document.removeEventListener('pointerup', soltar, true);
-      };
-      document.addEventListener('pointerup', soltar, true);
-      setTimeout(soltar, 800);   // garantia, caso o dedo já tenha saído
-    }
+    // Teclas do PIN: reagem ao encostar o dedo (sem espera). Cancelar o toque aqui impede que o
+    // iPhone o "repita" no que fica por baixo quando o ecrã do PIN desaparece.
+    document.querySelectorAll('.pin-btn[data-k]').forEach(el => {
+      const carregar = () => { el.dataset.k === 'del' ? pinDel() : pinPress(el.dataset.k); };
+      el.addEventListener('touchstart', e => {
+        e.preventDefault();
+        el.classList.add('press');
+        carregar();
+      }, { passive: false });
+      el.addEventListener('touchend', () => el.classList.remove('press'));
+      el.addEventListener('touchcancel', () => el.classList.remove('press'));
+      el.addEventListener('mousedown', e => { e.preventDefault(); carregar(); });
+    });
 
     function checkPinCode() {
       if (PINS_VALIDOS.includes(pinDigitos)) {
-        // As teclas reagem ao encostar o dedo (resposta imediata). Até o dedo sair do ecrã
-        // a app ignora toques, para esse mesmo toque não escolher um local sem querer.
-        bloquearToquesAteLevantar();
         document.getElementById('pinScreen').classList.add('hidden');
         pinDigitos = '';
         updatePinDots();
