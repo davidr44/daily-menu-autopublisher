@@ -164,13 +164,6 @@
     .pk-empty { padding: 20px 16px; color: var(--ink-2); font-size: 15px; }
 
 
-    /* Lista completa de pratos */
-    .see-all {
-      display: flex; align-items: center; justify-content: center; gap: 6px; width: 100%; margin-top: 12px;
-      min-height: 52px; border-radius: 14px; border: 1px dashed rgba(23, 24, 26, 0.25); background: transparent;
-      font-size: 16px; font-weight: 600; color: var(--ink); cursor: pointer; touch-action: manipulation;
-    }
-    .see-all .i { width: 18px; height: 18px; }
     .all-list { margin-top: 12px; background: var(--card); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }
     .all-letter { padding: 12px 16px 4px; font-size: 14px; font-weight: 800; color: var(--ink-2); background: var(--bg); border-bottom: 1px solid var(--line); }
     .all-row { display: block; width: 100%; text-align: left; padding: 14px 16px; border: none; border-bottom: 1px solid var(--line); background: var(--card); font-size: 16px; cursor: pointer; touch-action: manipulation; }
@@ -375,7 +368,6 @@
         <button class="search-btn" onclick="abrirLista('pratos', true)"><svg class="i" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><span>Procurar prato</span></button>
       </div>
       <div class="tiles" id="pratosTiles"></div>
-      <button class="see-all" id="pratosSeeAll" onclick="abrirLista('pratos', false)"><span id="pratosSeeAllTxt">Ver todos os pratos</span><svg class="i" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></svg></button>
     </section>
 
     <!-- 4. Confirmar -->
@@ -482,8 +474,43 @@
       "Bacalhau lascado", "Escalope de vitela Mirandesa", "Polvo no forno", "Arroz de polvo"
     ];
 
-    const N_PRATOS_BOTOES = 20;
-    let state = { local: null, sopas: new Set(), pratos: new Set() };
+    // Botões fixos: os 30 pratos que mais saíram nas ementas de nov/2025 a mar/2026, do mais para o menos frequente
+    const BOTOES_PRATOS = [
+      "Bacalhau com natas",
+      "Frango à Brás",
+      "Bacalhau espiritual",
+      "Empadão",
+      "Arroz de pato",
+      "Bacalhau c/natas e espinafres",
+      "Choco à lagareiro",
+      "Polvo à lagareiro",
+      "Delícia de bacalhau com gambas",
+      "Bacalhau com broa à SR",
+      "Ervilhas com ovos escalfados",
+      "Lasanha de carne",
+      "Salmão grelhado",
+      "Mão de vaca com grão",
+      "Bacalhau à lagareiro",
+      "Dourada grelhada",
+      "Dobrada",
+      "Empadão de frango",
+      "Lulas à lagareiro",
+      "Red fish no forno",
+      "Vitela no tacho com puré",
+      "Lasanha de frango",
+      "Robalo grelhado",
+      "Cozido à portuguesa",
+      "Empadão de carne",
+      "Alheira de vitela Mirandesa",
+      "Almôndegas com esparguete",
+      "Feijoada à transmontana",
+      "Lulas recheadas com puré",
+      "Cabrito assado no forno"
+    ];
+    // Sopas pela mesma ordem de frequência (a Canja vem sempre)
+    const ORDEM_SOPAS = ["Canja", "Juliana", "Portuguesa", "Alho francês", "Feijão verde", "Creme de legumes", "Espinafres", "Agrião", "Espinafres com feijão branco", "Nabiça", "Espinafres com grão", "Creme de cenoura", "Nabiça com grão", "Lavrador", "Peixe", "Lombardo com feijão", "Couve à portuguesa com feijão catarino", "Alho francês com grão", "Primavera", "Feijão", "Nabiça com feijão branco", "Caldo verde", "Couve galega c/feijão branco"];
+    const SOPA_FIXA = 'Canja';
+    let state = { local: null, sopas: new Set([SOPA_FIXA]), pratos: new Set() };
     let current = 1;
     let enviando = false;
 
@@ -509,7 +536,11 @@
       return [...TOP_PRATOS, ...rest, ...ex.pratos.filter(p => !PRATOS.includes(p))];
     }
     function getTop(type) {
-      return type === 'sopas' ? getAll('sopas') : getAll('pratos').slice(0, N_PRATOS_BOTOES);
+      if (type === 'sopas') {
+        const all = getAll('sopas');
+        return [...ORDEM_SOPAS.filter(x => all.includes(x)), ...all.filter(x => !ORDEM_SOPAS.includes(x))];
+      }
+      return BOTOES_PRATOS;
     }
 
     function hoje() {
@@ -605,7 +636,6 @@
       const n = sel.size;
       if (type === 'sopas') sub.textContent = n === 0 ? 'Escolhe até 2.' : (n === 1 ? '1 de 2 escolhida.' : '2 de 2 escolhidas.');
       else sub.textContent = n === 0 ? 'Escolhe todos os que houver.' : (n === 1 ? '1 prato escolhido.' : n + ' pratos escolhidos.');
-      if (type === 'pratos') document.getElementById('pratosSeeAllTxt').textContent = 'Ver todos os pratos (' + getAll('pratos').length + ')';
     }
 
     // ── Lista completa com pesquisa ──
@@ -791,7 +821,7 @@
     }
 
     function resetForm() {
-      state = { local: null, sopas: new Set(), pratos: new Set() };
+      state = { local: null, sopas: new Set([SOPA_FIXA]), pratos: new Set() };
       document.getElementById('btnI').classList.remove('on');
       document.getElementById('btnO').classList.remove('on');
       const p = document.getElementById('localPill');
