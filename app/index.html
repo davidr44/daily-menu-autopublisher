@@ -580,9 +580,6 @@
     function abrirConfirmacao() {
       document.getElementById('sheetTxt').textContent =
         'A ementa de ' + state.local + ' sai já no Instagram e no Facebook.';
-      const c = document.getElementById('btnConfirm');
-      c.disabled = true;                       // evita toque duplo acidental
-      setTimeout(() => { c.disabled = false; }, 500);
       document.getElementById('sheet').classList.add('show');
     }
     function fecharConfirmacao() {
